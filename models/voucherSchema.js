@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-const VoucherSchema = new mongoose.Schema({
+const voucherSchema = new mongoose.Schema({
   userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
   amount: { type: Number, required: true },      // 10, 50, 100
   payText: { type: String, required: true, unique: true },     // Pay ₹10 Rupee
@@ -15,4 +15,4 @@ const VoucherSchema = new mongoose.Schema({
   createdAt: { type: Date, default: Date.now }
 });
 
-module.exports = mongoose.model("Voucher", VoucherSchema);
+module.exports = mongoose.model("Voucher", voucherSchema);

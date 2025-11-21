@@ -1,4 +1,4 @@
-const Voucher = require("../models/VoucherSchema");
+const Voucher = require("../models/voucherSchema");
 
 
 exports.createVoucher = async (req, res) => {
