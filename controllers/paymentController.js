@@ -150,8 +150,8 @@ exports.getPaymentHistory = async (req, res) => {
     // Fetch user payments
     const payments = await Payment.find({ userId })
       .sort({ createdAt: -1 })
-      .skip(skip)
-      .limit(limit);
+      // .skip(skip)
+      // .limit(limit);
 
     const total = await Payment.countDocuments({ userId });
 
