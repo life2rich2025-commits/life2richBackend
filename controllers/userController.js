@@ -137,12 +137,13 @@ exports.getReferralCode = async (req, res) => {
 exports.editProfile = async (req, res) => {
   try {
     const userId = req.userId;
-    const { name, userName, phoneNumber } = req.body;
+    const { name, userName, phoneNumber, email } = req.body;
 
     let updateData = {
-      name,
-      userName,
-      phoneNumber
+      name: name,
+      userName : userName,
+      phoneNumber: phoneNumber,
+      email: email
     };
 
     // If user uploads an image
