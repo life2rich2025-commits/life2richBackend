@@ -1,5 +1,4 @@
 const mongoose = require("mongoose");
-const { v4: uuidv4 } = require("uuid"); // UUID library for unique IDs
 
 const voucherSchema = new mongoose.Schema({
   userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
@@ -7,7 +6,7 @@ const voucherSchema = new mongoose.Schema({
   voucherId: { type: String, unique: true }, // auto-generated
   isScratched: { type: Boolean, default: false },
   winAmount: { type: Number, default: 0 },
-  position: { type: Number, default: 0 },
+  position: { type: Number, default: 0 }, 
   status: {
     type: String,
     enum: ["active", "expired"],

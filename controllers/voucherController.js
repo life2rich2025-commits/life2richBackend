@@ -1,6 +1,5 @@
 const Voucher = require("../models/voucherSchema");
-const { v4: uuidv4 } = require("uuid"); // UUID library for unique IDs
-
+const Winner = require("../models/WinnerModel");
 
 exports.createVoucher = async (req, res) => {
   try {
@@ -10,9 +9,9 @@ exports.createVoucher = async (req, res) => {
     let newWinPrizeRange = winPrizeRange;
 
     const prizeTable = {
-      100: { consolation: [10, 5, 50, 20, 55, 32, 20, 2, 1, 8, 10, 20, 26] },
-      50: { consolation: [10, 5, 50, 20, 55, 32, 20, 2, 1, 8, 10, 20, 26] },
-      10: { consolation: [10, 5, 50, 20, 55, 32, 20, 2, 1, 8, 10, 20, 26] }
+      100: { consolation: [10, 5, 50, 20, 55, 32] },
+      500: { consolation: [ 20, 2, 1, 8, 10, 20, 26] },
+      10: { consolation: [8, 10, 20, 26] }
     };
 
     // Validation
@@ -57,7 +56,6 @@ exports.createVoucher = async (req, res) => {
       };
     });
 
-
     await Voucher.insertMany(vouchers);
 
     return res.json({
@@ -74,10 +72,10 @@ exports.createVoucher = async (req, res) => {
 
 exports.scratchVoucher = async (req, res) => {
   try {
-    const { voucherId } = req.body;
+    const { voucherId, winngAmount } = req.body;
     const userId = req.userId;
 
-    let voucher = await Voucher.findOne({ _id: voucherId, userId });
+    let voucher = await Voucher.findOne({ voucherId: voucherId })
 
     if (!voucher)
       return res.status(404).json({ message: "Voucher not found" });
@@ -85,18 +83,27 @@ exports.scratchVoucher = async (req, res) => {
     if (voucher.isScratched)
       return res.status(400).json({ message: "Already scratched" });
 
+    let vouchers = await Voucher.findOneAndUpdate(
+      { voucherId: voucherId },
+      {
+        $set: {
+          status: "expired",      // or whatever status you want
+          isScratched: true     // or true depending on your logic
+        }
+      },
+      { new: true } // return updated document
+    );
     // Random win amount logic
-    const possibleWins = [0, 2, 4, 10, 20, 30, 50, 100];
-    const winAmount = possibleWins[Math.floor(Math.random() * possibleWins.length)];
-
-    voucher.isScratched = true;
-    voucher.winAmount = winAmount;
-    await voucher.save();
+    const WinnerModel = await Winner.create({
+      userId: userId,
+      voucherId: voucherId,
+      winnerAmount: winngAmount,
+    });
 
     return res.json({
       success: true,
-      winAmount,
-      voucher
+      voucher,
+      WinnerModel
     });
   } catch (err) {
     console.log(err);
@@ -109,7 +116,11 @@ exports.getMyVouchers = async (req, res) => {
   try {
     const userId = req.userId;
 
-    const vouchers = await Voucher.find({ }).sort({ amount: -1 });
+    const vouchers = await Voucher.find({
+      isScratched: false,
+      status: "active"
+    }).sort({ amount: -1 });
+
 
     let grouped = {
       "100": [],
