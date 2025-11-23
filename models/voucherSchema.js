@@ -1,12 +1,13 @@
 const mongoose = require("mongoose");
+const { v4: uuidv4 } = require("uuid"); // UUID library for unique IDs
 
 const voucherSchema = new mongoose.Schema({
   userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
-  amount: { type: Number, required: true },      // 10, 50, 100
-  payText: { type: String, required: true, unique: true },     // Pay ₹10 Rupee
-  expiresAt: { type: Date, required: true },
+  categoryAmount: { type: String, required: true },
+  voucherId: { type: String, unique: true }, // auto-generated
   isScratched: { type: Boolean, default: false },
-  winAmount: { type: Number, default: 0 },       // After scratch result
+  winAmount: { type: Number, default: 0 },
+  position: { type: Number, default: 0 },
   status: {
     type: String,
     enum: ["active", "expired"],
@@ -15,4 +16,7 @@ const voucherSchema = new mongoose.Schema({
   createdAt: { type: Date, default: Date.now }
 });
 
-module.exports = mongoose.model("Voucher", voucherSchema);
+
+const Voucher = mongoose.model("Voucher", voucherSchema);
+
+module.exports = Voucher;
