@@ -132,3 +132,36 @@ exports.getReferralCode = async (req, res) => {
     return res.status(500).json({ message: "Server Error" });
   }
 };
+
+
+exports.editProfile = async (req, res) => {
+  try {
+    const userId = req.userId;
+    const { name, userName, phoneNumber } = req.body;
+
+    let updateData = {
+      name,
+      userName,
+      phoneNumber
+    };
+
+    // If user uploads an image
+    if (req.file) {
+      updateData.profileImageUrl = `/upload_profile/${req.file.filename}`;
+    }
+
+    const updatedUser = await User.findByIdAndUpdate(
+      userId,
+      updateData,
+      { new: true }
+    );
+
+    res.status(200).json({
+      message: "Profile updated successfully",
+      user: updatedUser
+    });
+
+  } catch (error) {
+    res.status(500).json({ message: "Profile update failed", error });
+  }
+};
