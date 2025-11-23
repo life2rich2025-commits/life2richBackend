@@ -18,6 +18,8 @@ app.use(cors({
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+app.use('/upload_profile', express.static('upload_profile'));
+
 connectDB();
 
 app.get("/", (req, res) => {
