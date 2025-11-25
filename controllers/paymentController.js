@@ -1,6 +1,7 @@
 const PaymentMethod = require("../models/PaymentMethodSchema");
 const Payment = require("../models/PaymentModel");
 const generateOrderId = require("../utils/generateOrderId");
+const User = require("../models/userModel");
 
 
 exports.addPaymentMethod = async (req, res) => {
@@ -119,6 +120,7 @@ exports.createPayment = async (req, res) => {
       utrNumber,
       amount,
       orderId: generateOrderId(),
+      Description:"Recharge Successful",
       status: "pending"
     });
 
@@ -161,6 +163,60 @@ exports.getPaymentHistory = async (req, res) => {
       page,
       pages: Math.ceil(total / limit),
       payments
+    });
+
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json({ message: "Server Error" });
+  }
+};
+
+
+exports.createWithdraw = async (req, res) => {
+  try {
+    const userId = req.userId; 
+    const { method, amount } = req.body;
+
+    //Validate fields
+    if (!method || !amount) {
+      return res.status(400).json({
+        message: "method, utrNumber, amount are required"
+      });
+    }
+
+    // Validate numeric amount
+    const withdrawAmount = Number(amount);
+    if (isNaN(withdrawAmount) || withdrawAmount <= 0) {
+      return res.status(400).json({
+        message: "Invalid withdraw amount"
+      });
+    }
+
+    // Get user
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({
+        message: "User not found"
+      });
+    }
+
+  
+    //Create withdraw request
+    const newWithdraw = await Payment.create({
+      userId,
+      method,
+      utrNumber: "0",
+      amount: withdrawAmount,
+      orderId: generateOrderId(),
+      Description: "Withdraw Request Submitted",
+      status: "pending"     // waiting for admin approval
+    });
+
+    return res.json({
+      success: true,
+      message: "Withdraw request submitted successfully",
+      withdraw: newWithdraw,
+      walletBalance: user.ewalletAmount
     });
 
   } catch (err) {

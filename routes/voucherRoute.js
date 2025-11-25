@@ -5,5 +5,6 @@ const auth = require("../middleware/auth");
 router.post("/create", auth, voucher.createVoucher);      // Admin/API
 router.post("/scratch", auth, voucher.scratchVoucher);
 router.get("/my-vouchers", auth, voucher.getMyVouchers);
+router.post("/voucherUserVaild", auth, voucher.onVaildVoucherUser);
 
 module.exports = router;

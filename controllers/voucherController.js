@@ -1,6 +1,8 @@
 const Voucher = require("../models/voucherSchema");
 const Winner = require("../models/WinnerModel");
 const { v4: uuidv4 } = require("uuid");
+const User = require("../models/userModel");
+const mongoose = require("mongoose");
 
 exports.createVoucher = async (req, res) => {
   try {
@@ -11,7 +13,7 @@ exports.createVoucher = async (req, res) => {
 
     const prizeTable = {
       100: { consolation: [10, 5, 50, 20, 55, 32] },
-      500: { consolation: [ 20, 2, 1, 8, 10, 20, 26] },
+      500: { consolation: [20, 2, 1, 8, 10, 20, 26] },
       10: { consolation: [8, 10, 20, 26] }
     };
 
@@ -94,6 +96,30 @@ exports.scratchVoucher = async (req, res) => {
       },
       { new: true } // return updated document
     );
+
+    // Winning Amount 
+
+    // 4️⃣ If winning amount > 0 → update user's ewallet
+    let updatedUser = null;
+
+    if (winngAmount > 0) {
+
+      //Get user
+      const user = await User.findById(userId);
+
+      //Deduct the amount from e-wallet
+      user.ewalletAmount = (Number(user.ewalletAmount)+Number(winngAmount)).toString();
+
+
+      updatedUser = await User.findByIdAndUpdate(
+        userId,
+        { $set: { ewalletAmount: user.ewalletAmount } },  // add money to wallet
+        { new: true } // return updated user
+      );
+      console.log(updatedUser)
+    }
+
+
     // Random win amount logic
     const WinnerModel = await Winner.create({
       userId: userId,
@@ -143,3 +169,55 @@ exports.getMyVouchers = async (req, res) => {
     res.status(500).json({ message: "Server Error" });
   }
 };
+
+
+
+exports.onVaildVoucherUser = async (req, res) => {
+  try {
+    let { voucherAmount } = req.body;
+    const userId = req.userId;
+
+    //Validate userId
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
+      return res.status(400).json({ error: "Invalid user" });
+    }
+
+    //Get user
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    //Validate voucher amount
+    if (!voucherAmount || isNaN(voucherAmount) || voucherAmount <= 0) {
+      return res.status(400).json({ error: "Invalid voucher amount" });
+    }
+
+    //Check if user has enough e-wallet balance
+    if (user.ewalletAmount < voucherAmount) {
+      return res.status(400).json({ error: "Insufficient wallet balance" });
+    }
+
+    //Deduct the amount from e-wallet
+    user.ewalletAmount -= voucherAmount;
+
+
+    await User.findByIdAndUpdate(
+      userId,
+      [{ $set: { ewalletAmount: { $toDouble: user.ewalletAmount } } }],
+      { new: true }
+    );
+
+    return res.status(200).json({
+      message: "Voucher applied successfully",
+      walletBalance: user.ewalletAmount,
+      schemes: user
+    });
+
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ message: "Server Error" });
+  }
+};
+
+

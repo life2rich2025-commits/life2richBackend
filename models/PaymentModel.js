@@ -3,6 +3,8 @@ const mongoose = require("mongoose");
 const PaymentSchema = new mongoose.Schema(
   {
     userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
+    
+    Description:{ type: String, required: true },
 
     method: {
       type: String,
@@ -14,7 +16,9 @@ const PaymentSchema = new mongoose.Schema(
 
     amount: { type: Number, required: true },
 
-    orderId: { type: String, unique: true },
+    orderId: { type: String, unique: true },  
+    
+    isReferralStaus: {type: Boolean, default: false},
 
     status: {
       type: String,
