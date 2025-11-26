@@ -174,7 +174,7 @@ exports.getMyVouchers = async (req, res) => {
 
 exports.onVaildVoucherUser = async (req, res) => {
   try {
-    let { voucherAmount } = req.body;
+    let { voucherAmount, voucherId } = req.body;
     const userId = req.userId;
 
     //Validate userId
@@ -201,6 +201,7 @@ exports.onVaildVoucherUser = async (req, res) => {
     //Deduct the amount from e-wallet
     user.ewalletAmount -= voucherAmount;
 
+    let voucherDetails = Voucher.findOne({voucherId:voucherId})
 
     await User.findByIdAndUpdate(
       userId,
@@ -211,7 +212,8 @@ exports.onVaildVoucherUser = async (req, res) => {
     return res.status(200).json({
       message: "Voucher applied successfully",
       walletBalance: user.ewalletAmount,
-      schemes: user
+      schemes: user,
+      voucher: voucherDetails
     });
 
   } catch (err) {
