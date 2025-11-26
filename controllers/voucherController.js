@@ -200,8 +200,11 @@ exports.onVaildVoucherUser = async (req, res) => {
 
     //Deduct the amount from e-wallet
     user.ewalletAmount -= voucherAmount;
+    console.log(voucherId)
 
-    let voucherDetails = Voucher.findOne({voucherId:voucherId})
+    const voucherDetails = await Voucher.findOne({ voucherId: voucherId });
+
+    console.log(voucherDetails)
 
     await User.findByIdAndUpdate(
       userId,
