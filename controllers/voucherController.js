@@ -143,6 +143,14 @@ exports.getMyVouchers = async (req, res) => {
   try {
     const userId = req.userId;
 
+
+    const winnerTable = await Winner.find({ userId: userId});
+
+    const totalWinnerAmount = winnerTable.reduce((sum, item) => {
+      return sum + Number(item.winnerAmount);
+    }, 0);
+
+
     const vouchers = await Voucher.find({
       isScratched: false,
       status: "active"
@@ -161,6 +169,9 @@ exports.getMyVouchers = async (req, res) => {
 
     return res.json({
       success: true,
+      totalVoucher: vouchers.length,
+      totalValue: totalWinnerAmount,
+      scratchVoucher: winnerTable.length,
       vouchers: grouped
     });
 
