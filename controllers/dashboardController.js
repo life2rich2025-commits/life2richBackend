@@ -121,10 +121,10 @@ exports.getHomeData = async (req, res) => {
       success: true,
       message: "Successfully to reponse",
       reponse : {
-        totalAmountEarn:totalAmountEarn[0].totalCategoryAmount,
-        totalUser:totalUser,
-        totalVoucher: totalVoucher,
-        scratedVoucher: scratedVoucher,
+        totalAmountEarn:totalAmountEarn?.[0]?.totalCategoryAmount ?? 0,
+        totalUser:totalUser ?? 0,
+        totalVoucher: totalVoucher ?? 0,
+        scratedVoucher: scratedVoucher ?? 0,
         imageUrl:UploadImages,
         offer:offerList
       }
