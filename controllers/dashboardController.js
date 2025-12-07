@@ -184,7 +184,7 @@ exports.getHomeData = async (req, res) => {
     const totalUser = await User.find({});
 
     // Total Offers
-    const totalVoucher = await Voucher.find({isScratched : true}).sort({ createdAt: -1 });
+    const totalVoucher = await Voucher.find({isScratched : false}).sort({ createdAt: -1 });
 
     // Total Scrated Voucher
     const scratedVoucher = await Winner.find().sort({ createdAt: -1 });
