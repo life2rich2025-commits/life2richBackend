@@ -58,12 +58,18 @@ exports.updateBillingStatus = async (req, res) => {
 
     if(status == "success"){
       const userPayment = await User.findById(updated.userId)
-      const finalAmount = userPayment.ewalletAmount + updated.amount;
-      const userUpdatePayment = await User.findByIdAndUpdate(
-        updated.userId,
-        { $inc: { ewalletAmount: finalAmount } },   // add amount
-        { new: true }                                // return updated document
-      );
+        // add and assign
+        let finalAmount = userPayment.ewalletAmount;
+        finalAmount += updated.amount;
+
+        const userUpdatePayment = await User.findByIdAndUpdate(
+          updated.userId,
+          { ewalletAmount: finalAmount },   // set final amount
+          { new: true }
+        );
+
+        console.log("Updated Wallet:", userUpdatePayment.ewalletAmount);
+
     }
 
     res.json({
