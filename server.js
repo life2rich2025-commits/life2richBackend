@@ -5,6 +5,7 @@ const userRoutes = require("./routes/userRoutes");
 const paymentRoutes = require("./routes/paymentRoute");
 const voucherRoutes = require("./routes/voucherRoute");
 const homeRoutes = require("./routes/homeRoutes");
+const dashboardRoutes = require("./routes/dashboardRoutes");
 
 const app = express();
 const PORT = 4000;
@@ -34,6 +35,8 @@ app.use("/api/payment", paymentRoutes);
 app.use("/api", homeRoutes );
 
 app.use("/api/voucher", voucherRoutes);
+
+app.use("/api/dashboard", dashboardRoutes);
 
 
 app.listen(PORT, () => {
