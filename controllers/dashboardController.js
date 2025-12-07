@@ -75,7 +75,6 @@ exports.updateBillingStatus = async (req, res) => {
       success: true,
       message: "Status updated successfully",
       updatedPayment: updated,
-      userUpdatePayment: userUpdatePayment
     });
 
   } catch (err) {
@@ -191,39 +190,37 @@ exports.getHomeData = async (req, res) => {
     const scratedVoucher = await Winner.find().sort({ createdAt: -1 });
 
 
-    // const totalAmountEarn = await Winner.aggregate([
-    //   {
-    //     $lookup: {
-    //       from: "vouchers",         // collection name
-    //       localField: "voucherId",  // Winner.voucherId (String)
-    //       foreignField: "voucherId",// Voucher.voucherId (String)
-    //       as: "voucherDetails"
-    //     }
-    //   },
-    //   { $unwind: "$voucherDetails" },
+    const totalAmountEarn = await Winner.aggregate([
+      {
+        $lookup: {
+          from: "vouchers",         // collection name
+          localField: "voucherId",  // Winner.voucherId (String)
+          foreignField: "voucherId",// Voucher.voucherId (String)
+          as: "voucherDetails"
+        }
+      },
+      { $unwind: "$voucherDetails" },
 
-    //   {
-    //     $group: {
-    //       _id: null,
-    //       totalCategoryAmount: {
-    //         $sum: { $toDouble: "$voucherDetails.categoryAmount" } // convert string → number
-    //       }
-    //     }
-    //   },
+      {
+        $group: {
+          _id: null,
+          totalCategoryAmount: {
+            $sum: { $toDouble: "$voucherDetails.categoryAmount" } // convert string → number
+          }
+        }
+      },
 
-    //   {
-    //     $project: {
-    //       _id: 0,
-    //       totalCategoryAmount: 1
-    //     }
-    //   }
-    // ]);
-    const totalAmountEarn = 0;
+      {
+        $project: {
+          _id: 0,
+          totalCategoryAmount: 1
+        }
+      }
+    ]);
 
     //Images
 
     const UploadImages = await UploadImageScheme.find({});
-
 
     //available Offer
     const offerList = await OfferSchema.find({});
@@ -233,7 +230,7 @@ exports.getHomeData = async (req, res) => {
       success: true,
       message: "Successfully to reponse",
       reponse: {
-        totalAmountEarn: 0,
+        totalAmountEarn: totalAmountEarn[0].totalCategoryAmount,
         totalUser: totalUser ?? 0,
         totalVoucher: totalVoucher ?? 0,
         scratedVoucher: scratedVoucher ?? 0,
