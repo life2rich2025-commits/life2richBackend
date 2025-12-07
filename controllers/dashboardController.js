@@ -4,6 +4,28 @@ const OfferSchema = require("../models/Offer");
 const User = require ("../models/userModel");
 const Voucher = require("../models/voucherSchema");
 const Winner = require("../models/WinnerModel");
+const {generateVouchers }= require("../utils/generateVouchers");
+
+
+
+exports.addVoucher = async (req, res) => {
+  try {
+    await generateVouchers(req.body);
+    res.json({ success: true, message: "Added vouchers successfully" });
+  } catch (err) {
+    res.status(400).json({ message: err.message });
+  }
+};
+
+
+exports.getVoucher = async (req, res) => {
+  try {
+    const voucherList = await Voucher.find({ isScratched: { $ne: true } });
+    res.json({ success: true, voucherList: voucherList, message: "Successfully Getting Voucher" });
+  } catch (err) {
+    res.status(400).json({ message: err.message });
+  }
+};
 
 exports.uploadImage = async (req, res) => {
   try {
@@ -115,7 +137,6 @@ exports.getHomeData = async (req, res) => {
 
     //available Offer
     const offerList = await OfferSchema.find({});
-
 
 
     return res.json({

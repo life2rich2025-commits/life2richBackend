@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 
 const voucherSchema = new mongoose.Schema({
-  userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
+  userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: false },
   categoryAmount: { type: String, required: true },
   voucherId: { type: String, unique: true }, // auto-generated
   isScratched: { type: Boolean, default: false },

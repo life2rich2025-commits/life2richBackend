@@ -7,5 +7,7 @@ const upload = require("../middleware/upload");
 router.put("/uploadImage", upload.single("uploadImage"), dashboardController.uploadImage);
 router.post("/addOffer", dashboardController.addOffer);
 router.get("/home", dashboardController.getHomeData);
+router.post("/addVoucher", dashboardController.addVoucher);
+router.get("/getVoucher", dashboardController.getVoucher);
 
 module.exports = router;
