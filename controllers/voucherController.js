@@ -3,7 +3,7 @@ const Winner = require("../models/WinnerModel");
 const User = require("../models/userModel");
 const mongoose = require("mongoose");
 
-const {generateVouchers }= require("../utils/generateVouchers");
+const { generateVouchers } = require("../utils/generateVouchers");
 
 exports.createVoucher = async (req, res) => {
   try {
@@ -16,7 +16,6 @@ exports.createVoucher = async (req, res) => {
     res.status(400).json({ message: err.message });
   }
 };
-
 
 
 exports.scratchVoucher = async (req, res) => {
@@ -54,7 +53,7 @@ exports.scratchVoucher = async (req, res) => {
       const user = await User.findById(userId);
 
       //Deduct the amount from e-wallet
-      user.ewalletAmount = (Number(user.ewalletAmount)+Number(winngAmount)).toString();
+      user.ewalletAmount = (Number(user.ewalletAmount) + Number(winngAmount)).toString();
 
 
       updatedUser = await User.findByIdAndUpdate(
@@ -90,7 +89,7 @@ exports.getMyVouchers = async (req, res) => {
     const userId = req.userId;
 
 
-    const winnerTable = await Winner.find({ userId: userId});
+    const winnerTable = await Winner.find({ userId: userId });
 
     const totalWinnerAmount = winnerTable.reduce((sum, item) => {
       return sum + Number(item.winnerAmount);
@@ -102,12 +101,16 @@ exports.getMyVouchers = async (req, res) => {
       status: "active"
     }).sort({ amount: -1 });
 
+    let grouped = {};
+    
+    vouchers.forEach(v => {
+      const key = String(v.categoryAmount);
 
-    let grouped = {
-      "100": [],
-      "50": [],
-      "10": []
-    };
+      if (!grouped[key]) {
+        grouped[key] = [];
+      }
+      grouped[key].push(v);
+    });
 
     vouchers.forEach(v => {
       grouped[v.categoryAmount].push(v);
