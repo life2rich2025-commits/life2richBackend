@@ -79,33 +79,34 @@ exports.getHomeData = async (req, res) => {
     const scratedVoucher = await Winner.find().sort({ createdAt: -1 });
 
 
-    const totalAmountEarn = await Winner.aggregate([
-      {
-        $lookup: {
-          from: "vouchers",         // collection name
-          localField: "voucherId",  // Winner.voucherId (String)
-          foreignField: "voucherId",// Voucher.voucherId (String)
-          as: "voucherDetails"
-        }
-      },
-      { $unwind: "$voucherDetails" },
+    // const totalAmountEarn = await Winner.aggregate([
+    //   {
+    //     $lookup: {
+    //       from: "vouchers",         // collection name
+    //       localField: "voucherId",  // Winner.voucherId (String)
+    //       foreignField: "voucherId",// Voucher.voucherId (String)
+    //       as: "voucherDetails"
+    //     }
+    //   },
+    //   { $unwind: "$voucherDetails" },
 
-      {
-        $group: {
-          _id: null,
-          totalCategoryAmount: {
-            $sum: { $toDouble: "$voucherDetails.categoryAmount" } // convert string → number
-          }
-        }
-      },
+    //   {
+    //     $group: {
+    //       _id: null,
+    //       totalCategoryAmount: {
+    //         $sum: { $toDouble: "$voucherDetails.categoryAmount" } // convert string → number
+    //       }
+    //     }
+    //   },
 
-      {
-        $project: {
-          _id: 0,
-          totalCategoryAmount: 1
-        }
-      }
-    ]);
+    //   {
+    //     $project: {
+    //       _id: 0,
+    //       totalCategoryAmount: 1
+    //     }
+    //   }
+    // ]);
+    const totalAmountEarn = 0;
 
     //Images
 
