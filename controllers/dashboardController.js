@@ -3,9 +3,9 @@ const UploadImageScheme = require("../models/UploadImage");
 const OfferSchema = require("../models/Offer");
 const User = require ("../models/userModel");
 const Voucher = require("../models/voucherSchema");
+const Payment = require("../models/PaymentModel");
 const Winner = require("../models/WinnerModel");
 const {generateVouchers }= require("../utils/generateVouchers");
-
 
 
 exports.addVoucher = async (req, res) => {
@@ -26,6 +26,80 @@ exports.getVoucher = async (req, res) => {
     res.status(400).json({ message: err.message });
   }
 };
+
+
+exports.getBillingInFo = async (req, res) => {
+  try {
+    const getBillingInFoList = await Payment.find({ status: "pending"}).populate("userId", "name userName email phoneNumber");
+    res.json({ success: true, billInfoList: getBillingInFoList, message: "Successfully Getting Amount" });
+  } catch (err) {
+    res.status(400).json({ message: err.message });
+  }
+};
+
+
+exports.updateBillingStatus = async (req, res) => {
+  try {
+    const { paymentId, status } = req.body;
+
+    if (!paymentId || !status) {
+      return res.status(400).json({ message: "paymentId and status are required" });
+    }
+
+    const updated = await Payment.findByIdAndUpdate(
+      paymentId,
+      { status: status },
+      { new: true }
+    );
+
+    if (!updated) {
+      return res.status(404).json({ message: "Payment not found" });
+    }
+
+    res.json({
+      success: true,
+      message: "Status updated successfully",
+      updatedPayment: updated
+    });
+
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+
+
+exports.updateVoucher = async (req, res) => {
+  try {
+    const {voucherId,winamount} = req.body;
+     const updated = await Voucher.findByIdAndUpdate(
+      voucherId,
+      { winAmount: winamount },
+      { new: true }
+    );
+    res.json({ success: true, voucherList: updated, message: "Successfully Update Voucher" });
+  } catch (err) {
+    res.status(400).json({ message: err.message });
+  }
+};
+
+exports.deleteVoucher = async (req, res) => {
+   try {
+    const { voucherId } = req.body;
+
+    const deleted = await Voucher.findByIdAndDelete(voucherId);
+
+    if (!deleted) {
+      return res.status(404).json({ message: "Voucher not found" });
+    }
+
+    res.json({ message: "Voucher deleted successfully", deleted });
+  } catch (error) {
+    res.status(500).json({ message: "Error deleting voucher", error });
+  }
+};
+
+
 
 exports.uploadImage = async (req, res) => {
   try {
