@@ -1,11 +1,11 @@
 const { response } = require("express");
 const UploadImageScheme = require("../models/UploadImage");
 const OfferSchema = require("../models/Offer");
-const User = require ("../models/userModel");
+const User = require("../models/userModel");
 const Voucher = require("../models/voucherSchema");
 const Payment = require("../models/PaymentModel");
 const Winner = require("../models/WinnerModel");
-const {generateVouchers }= require("../utils/generateVouchers");
+const { generateVouchers } = require("../utils/generateVouchers");
 
 
 exports.addVoucher = async (req, res) => {
@@ -30,7 +30,7 @@ exports.getVoucher = async (req, res) => {
 
 exports.getBillingInFo = async (req, res) => {
   try {
-    const getBillingInFoList = await Payment.find({ status: "pending"}).populate("userId", "name userName email phoneNumber");
+    const getBillingInFoList = await Payment.find({ status: "pending" }).populate("userId", "name userName email phoneNumber");
     res.json({ success: true, billInfoList: getBillingInFoList, message: "Successfully Getting Amount" });
   } catch (err) {
     res.status(400).json({ message: err.message });
@@ -56,19 +56,18 @@ exports.updateBillingStatus = async (req, res) => {
       return res.status(404).json({ message: "Payment not found" });
     }
 
-    if(status == "success"){
+    if (status == "success") {
       const userPayment = await User.findById(updated.userId)
-        // add and assign
-        let finalAmount = userPayment.ewalletAmount;
-        finalAmount += updated.amount;
+      // add and assign
+      let finalAmount = Number(userPayment.ewalletAmount);
+      finalAmount += Number(updated.amount);
+      const userUpdatePayment = await User.findByIdAndUpdate(
+        updated.userId,
+        { ewalletAmount: finalAmount },   // set final amount
+        { new: true }
+      );
 
-        const userUpdatePayment = await User.findByIdAndUpdate(
-          updated.userId,
-          { ewalletAmount: finalAmount },   // set final amount
-          { new: true }
-        );
-
-        console.log("Updated Wallet:", userUpdatePayment.ewalletAmount);
+      console.log("Updated Wallet:", userUpdatePayment.ewalletAmount);
 
     }
 
@@ -88,8 +87,8 @@ exports.updateBillingStatus = async (req, res) => {
 
 exports.updateVoucher = async (req, res) => {
   try {
-    const {voucherId,winamount} = req.body;
-     const updated = await Voucher.findByIdAndUpdate(
+    const { voucherId, winamount } = req.body;
+    const updated = await Voucher.findByIdAndUpdate(
       voucherId,
       { winAmount: winamount },
       { new: true }
@@ -101,7 +100,7 @@ exports.updateVoucher = async (req, res) => {
 };
 
 exports.deleteVoucher = async (req, res) => {
-   try {
+  try {
     const { voucherId } = req.body;
 
     const deleted = await Voucher.findByIdAndDelete(voucherId);
@@ -124,7 +123,7 @@ exports.uploadImage = async (req, res) => {
 
     let updateData = {
       imagename: req.file.filename,
-      tag : imagetag,
+      tag: imagetag,
       status: true,
     };
 
@@ -134,11 +133,11 @@ exports.uploadImage = async (req, res) => {
     }
 
     const updatedImageUser = await UploadImageScheme.insertOne(
-       updateData,
+      updateData,
       { new: true }
     );
 
-     const updatedImageUserList = await UploadImageScheme.find({});
+    const updatedImageUserList = await UploadImageScheme.find({});
 
 
     res.status(200).json({
@@ -153,16 +152,16 @@ exports.uploadImage = async (req, res) => {
 
 exports.addOffer = async (req, res) => {
   try {
-    const { title, description,validTill } = req.body;
+    const { title, description, validTill } = req.body;
 
     let addOfferData = {
       title: title,
-      description : description,
+      description: description,
       validTill: validTill,
     };
 
     const addOfferScheme = await OfferSchema.insertOne(
-       addOfferData,
+      addOfferData,
       { new: true }
     );
 
@@ -171,7 +170,7 @@ exports.addOffer = async (req, res) => {
       message: "Offer Add successfully",
       response: offerList
     });
-  
+
   } catch (error) {
     res.status(500).json({ message: "Offer Add failed", error });
   }
@@ -186,7 +185,7 @@ exports.getHomeData = async (req, res) => {
     const totalUser = await User.find({});
 
     // Total Offers
-    const totalVoucher= await Voucher.find().sort({ createdAt: -1 });
+    const totalVoucher = await Voucher.find().sort({ createdAt: -1 });
 
     // Total Scrated Voucher
     const scratedVoucher = await Winner.find().sort({ createdAt: -1 });
@@ -233,13 +232,13 @@ exports.getHomeData = async (req, res) => {
     return res.json({
       success: true,
       message: "Successfully to reponse",
-      reponse : {
-        totalAmountEarn:0,
-        totalUser:totalUser ?? 0,
+      reponse: {
+        totalAmountEarn: 0,
+        totalUser: totalUser ?? 0,
         totalVoucher: totalVoucher ?? 0,
         scratedVoucher: scratedVoucher ?? 0,
-        imageUrl:UploadImages,
-        offer:offerList
+        imageUrl: UploadImages,
+        offer: offerList
       }
     });
 
