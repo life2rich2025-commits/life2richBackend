@@ -56,10 +56,21 @@ exports.updateBillingStatus = async (req, res) => {
       return res.status(404).json({ message: "Payment not found" });
     }
 
+    if(status == "success"){
+      const userPayment = await User.findById(updated.userId)
+      const finalAmount = userPayment.ewalletAmount + updated.amount;
+      const userUpdatePayment = await User.findByIdAndUpdate(
+        updated.userId,
+        { $inc: { ewalletAmount: finalAmount } },   // add amount
+        { new: true }                                // return updated document
+      );
+    }
+
     res.json({
       success: true,
       message: "Status updated successfully",
-      updatedPayment: updated
+      updatedPayment: updated,
+      userUpdatePayment: userUpdatePayment
     });
 
   } catch (err) {
