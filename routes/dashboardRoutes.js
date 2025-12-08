@@ -13,5 +13,6 @@ router.post("/updateVoucher", dashboardController.updateVoucher);
 router.post("/deleteVoucher", dashboardController.deleteVoucher);
 router.get("/getBillingInFo", dashboardController.getBillingInFo);
 router.post("/updateBillingStatus", dashboardController.updateBillingStatus);
+router.post("/deleteBannerImage", dashboardController.deleteBannerImage);
 
 module.exports = router;

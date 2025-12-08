@@ -18,6 +18,23 @@ exports.addVoucher = async (req, res) => {
 };
 
 
+
+exports.deleteBannerImage = async (req, res) => {
+  try {
+    const { bannerId } = req.body;
+    const result = await UploadImageScheme.deleteOne({ _id: bannerId });
+    if (result.deletedCount === 1) {
+      console.log("Deleted successfully");
+      res.json({ success: true, message: "Deleted successfully" });
+    } else {
+      console.log("No document found");
+      res.json({ success: false, message: "No document found" });
+    } 
+  } catch (err) {
+    res.status(400).json({ message: err.message });
+  }
+};
+
 exports.getVoucher = async (req, res) => {
   try {
     const voucherList = await Voucher.find({ isScratched: { $ne: true } });
@@ -183,7 +200,7 @@ exports.getHomeData = async (req, res) => {
     const totalUser = await User.find({});
 
     // Total Offers
-    const totalVoucher = await Voucher.find({isScratched : false}).sort({ createdAt: -1 });
+    const totalVoucher = await Voucher.find({ isScratched: false }).sort({ createdAt: -1 });
 
     // Total Scrated Voucher
     const scratedVoucher = await Winner.find().sort({ createdAt: -1 });
