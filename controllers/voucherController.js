@@ -2,7 +2,7 @@ const Voucher = require("../models/voucherSchema");
 const Winner = require("../models/WinnerModel");
 const User = require("../models/userModel");
 const mongoose = require("mongoose");
-
+const UploadImageScheme = require("../models/UploadImage");
 const { generateVouchers } = require("../utils/generateVouchers");
 
 exports.createVoucher = async (req, res) => {
@@ -88,6 +88,7 @@ exports.getMyVouchers = async (req, res) => {
   try {
     const userId = req.userId;
 
+    const voucherDash = await UploadImageScheme.find({ status: true, tag: "voucher" })
 
     const winnerTable = await Winner.find({ userId: userId });
 
@@ -118,6 +119,7 @@ exports.getMyVouchers = async (req, res) => {
 
     return res.json({
       success: true,
+      voucherDash: voucherDash,
       totalVoucher: vouchers.length,
       totalValue: totalWinnerAmount,
       scratchVoucher: winnerTable.length,

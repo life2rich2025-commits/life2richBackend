@@ -1,6 +1,8 @@
 const User = require("../models/userModel");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
+const UploadImageScheme = require("../models/UploadImage");
+const Offer = require("../models/Offer");
 
 // Generate JWT
 const generateToken = (id) => {
@@ -11,24 +13,24 @@ const generateToken = (id) => {
 // Register User
 exports.registerUser = async (req, res) => {
   try {
-    const { name, userName,email, password,confirmPassword, phoneNumber ,referralCode} = req.body;
+    const { name, userName, email, password, confirmPassword, phoneNumber, referralCode } = req.body;
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const newUser = await User.create({
-        name,
-        userName,
-        email,
-        password: password,
-        confirmPassword:"",
-        phoneNumber,
-        profileImageUrl: "",
-        ewalletAmount:"0",
-        rewards: "0",
-        referral: "0",
-        referralCode: generateNameReferral(name),
-        frdReferralCode:""
-        });
+      name,
+      userName,
+      email,
+      password: password,
+      confirmPassword: "",
+      phoneNumber,
+      profileImageUrl: "",
+      ewalletAmount: "0",
+      rewards: "0",
+      referral: "0",
+      referralCode: generateNameReferral(name),
+      frdReferralCode: ""
+    });
 
 
     res.status(201).json({
@@ -64,8 +66,8 @@ exports.loginUser = async (req, res) => {
 
     // Compare password
     if (password !== user.password) {
-    return res.status(401).json({ message: "Incorrect Password" });
-  }
+      return res.status(401).json({ message: "Incorrect Password" });
+    }
 
     // Generate token
     const token = generateToken(user._id);
@@ -141,7 +143,7 @@ exports.editProfile = async (req, res) => {
 
     let updateData = {
       name: name,
-      userName : userName,
+      userName: userName,
       phoneNumber: phoneNumber,
       email: email
     };
@@ -160,6 +162,26 @@ exports.editProfile = async (req, res) => {
     res.status(200).json({
       message: "Profile updated successfully",
       user: updatedUser
+    });
+
+  } catch (error) {
+    res.status(500).json({ message: "Profile update failed", error });
+  }
+};
+
+
+exports.gethomedash = async (req, res) => {
+  try {
+    const homeDash = await UploadImageScheme.find({ status: true, tag: "dashboard" })
+    const today = new Date();
+    const availableOffer = await Offer.find({
+      status: true,
+      validTill: { $gte: today }   // validTill >= current date
+    });
+    res.status(200).json({
+      message: "Home Dash  successfully getting",
+      homeDash: homeDash,
+      availableOffer:availableOffer,
     });
 
   } catch (error) {
