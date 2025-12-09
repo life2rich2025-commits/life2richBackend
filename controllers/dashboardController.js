@@ -47,7 +47,17 @@ exports.getVoucher = async (req, res) => {
 
 exports.getBillingInFo = async (req, res) => {
   try {
-    const getBillingInFoList = await Payment.find({ status: "pending" }).populate("userId", "name userName email phoneNumber");
+   // const getBillingInFoList = await Payment.find({ status: "pending" }).populate("userId", "name userName email phoneNumber");
+  const getBillingInFoList = await Payment.find({ status: "pending" })
+  .populate("userId", "name userName email phoneNumber")
+  .populate({
+    path: "userId",
+    populate: {
+      path: "paymentMethod",
+      match: { isPrimary: true }  // only primary bank/upi details
+    }
+  });
+
     res.json({ success: true, billInfoList: getBillingInFoList, message: "Successfully Getting Amount" });
   } catch (err) {
     res.status(400).json({ message: err.message });

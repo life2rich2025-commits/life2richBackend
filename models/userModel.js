@@ -15,4 +15,13 @@ const userSchema = new mongoose.Schema({
   frdReferralCode: { type: String, required: false }
 });
 
+userSchema.virtual("paymentMethod", {
+  ref: "PaymentMethod",
+  localField: "_id",
+  foreignField: "userId"
+});
+
+userSchema.set("toObject", { virtuals: true });
+userSchema.set("toJSON", { virtuals: true });
+
 module.exports = mongoose.model("User", userSchema);
