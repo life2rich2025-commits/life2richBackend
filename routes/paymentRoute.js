@@ -1,5 +1,5 @@
 const express = require("express");
-const { addPaymentMethod , getPaymentMethod, createPayment,getPaymentHistory, createWithdraw} = require("../controllers/paymentController");
+const { addPaymentMethod , getPaymentMethod, createPayment,getPaymentHistory, createWithdraw, transactionHistory} = require("../controllers/paymentController");
 const router = express.Router();
 const auth = require("../middleware/auth");
 
@@ -8,5 +8,6 @@ router.get("/payment-method", auth, getPaymentMethod);
 router.post("/submit-payment", auth, createPayment);
 router.get("/payment-history", auth, getPaymentHistory);
 router.post("/payment-withdraw", auth, createWithdraw);
+router.get("/transaction_history", auth, transactionHistory);
 
 module.exports = router;
