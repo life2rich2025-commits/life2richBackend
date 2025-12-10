@@ -85,7 +85,12 @@ exports.updateBillingStatus = async (req, res) => {
     if (status == "success") {
       const userPayment = await User.findById(updated.userId)
       // add and assign
-      let finalAmount = Number(userPayment.ewalletAmount) + Number(updated.amount);
+      let finalAmount;
+      if(updated.Description === "Withdraw Request Submitted"){
+       finalAmount = Number(userPayment.ewalletAmount) - Number(updated.amount);
+      }else{
+       finalAmount = Number(userPayment.ewalletAmount) + Number(updated.amount);
+      }
       const userUpdatePayment = await User.findByIdAndUpdate(
         updated.userId,
         { ewalletAmount: finalAmount },   // set final amount
