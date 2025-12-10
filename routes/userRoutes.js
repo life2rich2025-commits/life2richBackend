@@ -1,5 +1,5 @@
 const express = require("express");
-const { registerUser, getUsers, loginUser, getProfile, getReferralCode ,editProfile,gethomedash } = require("../controllers/userController");
+const { registerUser, getUsers, loginUser, getProfile, getReferralCode ,editProfile,gethomedash,forgotPassword ,verifyOtp,resetPassword} = require("../controllers/userController");
 const authMiddleware = require("../middleware/auth");
 const upload = require("../middleware/upload");
 const router = express.Router();
@@ -11,6 +11,7 @@ router.get("/profile", authMiddleware, getProfile);
 router.get("/referral-code", authMiddleware, getReferralCode);
 router.put("/edit-profile", authMiddleware, upload.single("profileImage"), editProfile);
 router.get("/homedash", gethomedash);
-
+router.post("/forgot-password", forgotPassword);
+router.post("/reset-password", resetPassword);
 
 module.exports = router;

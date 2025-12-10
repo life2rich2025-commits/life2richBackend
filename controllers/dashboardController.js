@@ -6,6 +6,7 @@ const Voucher = require("../models/voucherSchema");
 const Payment = require("../models/PaymentModel");
 const Winner = require("../models/WinnerModel");
 const { generateVouchers } = require("../utils/generateVouchers");
+const UpiModel = require("../models/upimodel");
 
 
 exports.addVoucher = async (req, res) => {
@@ -17,8 +18,6 @@ exports.addVoucher = async (req, res) => {
   }
 };
 
-
-
 exports.deleteBannerImage = async (req, res) => {
   try {
     const { bannerId } = req.body;
@@ -29,7 +28,7 @@ exports.deleteBannerImage = async (req, res) => {
     } else {
       console.log("No document found");
       res.json({ success: false, message: "No document found" });
-    } 
+    }
   } catch (err) {
     res.status(400).json({ message: err.message });
   }
@@ -47,16 +46,16 @@ exports.getVoucher = async (req, res) => {
 
 exports.getBillingInFo = async (req, res) => {
   try {
-   // const getBillingInFoList = await Payment.find({ status: "pending" }).populate("userId", "name userName email phoneNumber");
-  const getBillingInFoList = await Payment.find({ status: "pending" })
-  .populate("userId", "name userName email phoneNumber")
-  .populate({
-    path: "userId",
-    populate: {
-      path: "paymentMethod",
-      match: { isPrimary: true }  // only primary bank/upi details
-    }
-  });
+    // const getBillingInFoList = await Payment.find({ status: "pending" }).populate("userId", "name userName email phoneNumber");
+    const getBillingInFoList = await Payment.find({ status: "pending" })
+      .populate("userId", "name userName email phoneNumber")
+      .populate({
+        path: "userId",
+        populate: {
+          path: "paymentMethod",
+          match: { isPrimary: true }  // only primary bank/upi details
+        }
+      });
 
     res.json({ success: true, billInfoList: getBillingInFoList, message: "Successfully Getting Amount" });
   } catch (err) {
@@ -175,6 +174,7 @@ exports.uploadImage = async (req, res) => {
   }
 };
 
+
 exports.addOffer = async (req, res) => {
   try {
     const { title, description, validTill } = req.body;
@@ -200,6 +200,43 @@ exports.addOffer = async (req, res) => {
     res.status(500).json({ message: "Offer Add failed", error });
   }
 };
+
+
+
+
+exports.addupiScheme = async (req, res) => {
+  try {
+    const { upiid, bussinessname, } = req.body;
+    const addupiScheme = await UpiModel.insertOne({
+      upiid: upiid,
+      bussinessname: bussinessname,
+      status: false
+    });
+
+    res.status(200).json({
+      message: "Add Upi successfully",
+      response: addupiScheme
+    });
+
+  } catch (error) {
+    res.status(500).json({ message: "Add Upi failed", error });
+  }
+};
+
+
+exports.getupiScheme = async (req, res) => {
+  try {
+    const addupiScheme = await UpiModel.find({ });
+    res.status(200).json({
+      message: "Add Upi successfully",
+      response: addupiScheme
+    });
+
+  } catch (error) {
+    res.status(500).json({ message: "Add Upi failed", error });
+  }
+};
+
 
 
 

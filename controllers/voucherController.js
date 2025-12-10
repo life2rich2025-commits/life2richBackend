@@ -188,3 +188,21 @@ exports.onVaildVoucherUser = async (req, res) => {
 };
 
 
+exports.onGroupByVoucher = async (req, res) => {
+  try {
+    const data = await Voucher.aggregate([
+      {
+        $group: {
+          _id: "$categoryAmount",
+          items: { $push: "$$ROOT" },
+          count: { $sum: 1 }
+        }
+      },
+      { $sort: { _id: 1 } }
+    ]);
+
+    res.json({ success: true, data });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+};

@@ -12,7 +12,9 @@ const userSchema = new mongoose.Schema({
   rewards: { type: String, required: false },
   referral: { type: String, required: false },
   referralCode: { type: String, required: false },
-  frdReferralCode: { type: String, required: false }
+  frdReferralCode: { type: String, required: false },
+  otp: { type: String },           // hashed OTP
+  otpExpires: { type: Date }       // expire time
 });
 
 userSchema.virtual("paymentMethod", {

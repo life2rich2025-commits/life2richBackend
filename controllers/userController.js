@@ -3,7 +3,8 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 const UploadImageScheme = require("../models/UploadImage");
 const Offer = require("../models/Offer");
-
+const transporter = require("../config/email");
+const crypto = require("crypto");
 // Generate JWT
 const generateToken = (id) => {
   return jwt.sign({ id }, "MY_SECRET_KEY", { expiresIn: "30d" });
@@ -181,10 +182,100 @@ exports.gethomedash = async (req, res) => {
     res.status(200).json({
       message: "Home Dash  successfully getting",
       homeDash: homeDash,
-      availableOffer:availableOffer,
+      availableOffer: availableOffer,
     });
 
   } catch (error) {
     res.status(500).json({ message: "Profile update failed", error });
+  }
+};
+
+
+exports.forgotPassword = async (req, res) => {
+  try {
+    const { email } = req.body;
+
+    const user = await User.findOne({ email });
+    if (!user)
+      return res.status(404).json({ message: "User not found" });
+
+    // Generate 6-digit OTP
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+
+    // Hash OTP for security
+    const hashedOtp = await bcrypt.hash(otp, 10);
+
+    // Save OTP + expiry (5 mins)
+    user.otp = hashedOtp;
+    user.otpExpires = Date.now() + 5 * 60 * 1000;
+    await user.save();
+
+    // Send email
+    await transporter.sendMail({
+      from: '"Support – LifeRich" <noreplayliferich@gmail.com>',
+      to: email,
+      subject: "Your OTP Code - LifeRich",
+      html: `
+  <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #eee; border-radius: 10px; background-color: #f9f9f9;">
+    
+    <!-- Header / Company Logo -->
+    <div style="text-align: center; margin-bottom: 30px;">
+      <!--  <img src="https://yourcompany.com/logo.png" alt="LifeRich" style="width: 120px; height: auto;"/> -->
+      <h2 style="color: #2C3E50; margin-top: 10px;">LifeRich</h2>
+    </div>
+
+    <!-- Main Content -->
+    <div style="text-align: center;">
+      <h3 style="color: #34495E;">Your OTP Code</h3>
+      <p style="color: #555; font-size: 16px;">Use the code below to reset your password. It will expire in 5 minutes.</p>
+      <div style="font-size: 32px; font-weight: bold; color: #E74C3C; margin: 20px 0;">${otp}</div>
+      
+      <p style="font-size: 14px; color: #999; margin-top: 20px;">
+        If you did not request this, please ignore this email.
+      </p>
+    </div>
+
+    <!-- Footer -->
+    <div style="text-align: center; margin-top: 30px; font-size: 12px; color: #aaa;">
+      &copy; ${new Date().getFullYear()} LifeRich. All rights reserved.
+    </div>
+  </div>
+  `
+  });
+
+
+  res.json({ message: "OTP sent to email" });
+
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+
+
+exports.resetPassword = async (req, res) => {
+  try {
+    const { email, newPassword, otp } = req.body;
+
+    const user = await User.findOne({ email });
+    if (!user)
+      return res.status(404).json({ message: "User not found" });
+
+    const isMatch = await bcrypt.compare(otp, user.otp);
+    if (!isMatch || Date.now() > user.otpExpires)
+      return res.status(400).json({ message: "Invalid or expired OTP" });
+
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+    // Update password and clear OTP
+    user.password = hashedPassword;
+    user.otp = undefined;
+    user.otpExpires = undefined;
+    await user.save();
+
+    res.json({ message: "Password reset successfully" });
+
+  } catch (error) {
+    res.status(500).json({ message: error.message });
   }
 };
