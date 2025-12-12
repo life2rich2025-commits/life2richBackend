@@ -217,8 +217,9 @@ exports.addOffer = async (req, res) => {
 
 exports.addupiScheme = async (req, res) => {
   try {
-    const { upiid, bussinessname, } = req.body;
+    const { paymentType,upiid, bussinessname, } = req.body;
     const addupiScheme = await UpiModel.insertOne({
+      paymentType: paymentType,
       upiid: upiid,
       bussinessname: bussinessname,
       status: false
@@ -237,7 +238,7 @@ exports.addupiScheme = async (req, res) => {
 
 exports.getupiScheme = async (req, res) => {
   try {
-    const addupiScheme = await UpiModel.find({});
+    const addupiScheme = await UpiModel.find({status:false});
     res.status(200).json({
       message: "Add Upi successfully",
       response: addupiScheme
