@@ -86,11 +86,17 @@ exports.updateBillingStatus = async (req, res) => {
       const userPayment = await User.findById(updated.userId)
       // add and assign
       let finalAmount;
-      if(updated.Description === "Withdraw Request Submitted"){
-       finalAmount = Number(userPayment.ewalletAmount) - Number(updated.amount);
-      }else{
-       finalAmount = Number(userPayment.ewalletAmount) + Number(updated.amount);
+      if (updated.Description === "Withdraw Request Submitted") {
+        finalAmount = Number(userPayment.ewalletAmount) - Number(updated.amount);
+      } else {
+        finalAmount = Number(userPayment.ewalletAmount) + Number(updated.amount);
       }
+
+      // prevent negative wallet amounts
+      if (finalAmount < 0) {
+        finalAmount = 0;
+      }
+
       const userUpdatePayment = await User.findByIdAndUpdate(
         updated.userId,
         { ewalletAmount: finalAmount },   // set final amount
@@ -231,7 +237,7 @@ exports.addupiScheme = async (req, res) => {
 
 exports.getupiScheme = async (req, res) => {
   try {
-    const addupiScheme = await UpiModel.find({ });
+    const addupiScheme = await UpiModel.find({});
     res.status(200).json({
       message: "Add Upi successfully",
       response: addupiScheme
