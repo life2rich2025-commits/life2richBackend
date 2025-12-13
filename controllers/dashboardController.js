@@ -238,7 +238,7 @@ exports.addupiScheme = async (req, res) => {
 
 exports.getupiScheme = async (req, res) => {
   try {
-    const addupiScheme = await UpiModel.find({status:false});
+    const addupiScheme = await UpiModel.find({});
     res.status(200).json({
       message: "Add Upi successfully",
       response: addupiScheme
