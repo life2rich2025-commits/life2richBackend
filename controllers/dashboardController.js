@@ -272,7 +272,7 @@ exports.updateupiScheme = async (req, res) => {
     const { upiId, status } = req.body;
     const updated = await UpiModel.findByIdAndUpdate(
       upiId,
-      { status: status },
+      { status:  Boolean(status) },
       { new: true }
     );
     res.json({ success: true, upiList: updated, message: "Successfully Update UPI" });
@@ -281,7 +281,6 @@ exports.updateupiScheme = async (req, res) => {
   }
 };
 
-exports
 
 
 
