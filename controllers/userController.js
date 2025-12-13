@@ -205,9 +205,9 @@ exports.forgotPassword = async (req, res) => {
     // Hash OTP for security
    // const hashedOtp = await bcrypt.hash(otp, 10);
 
-    // Save OTP + expiry (5 mins)
+    // Save OTP + expiry (5 min
     user.otp = otp;
-    user.otpExpires = Date.now() + 5 * 60 * 1000;
+    user.otpExpires = Date.now() + 10 * 60 * 1000;
     await user.save();
 
     // Send email
