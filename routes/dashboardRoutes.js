@@ -16,6 +16,8 @@ router.post("/updateBillingStatus", dashboardController.updateBillingStatus);
 router.post("/deleteBannerImage", dashboardController.deleteBannerImage);
 router.post("/addupi", dashboardController.addupiScheme);
 router.get("/getupi", dashboardController.getupiScheme);
+router.post("/deleteupi",dashboardController.deleteupiScheme)
+router.post("/updateupi",dashboardController.updateupiScheme)
 
 
 module.exports = router;

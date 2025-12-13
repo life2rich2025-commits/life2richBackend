@@ -250,6 +250,39 @@ exports.getupiScheme = async (req, res) => {
 };
 
 
+exports.deleteupiScheme = async (req, res) => {
+  try {
+    const { upiId } = req.body;
+
+    const deleted = await UpiModel.findByIdAndDelete(upiId);
+
+    if (!deleted) {
+      return res.status(404).json({ message: "UPId not found" });
+    }
+
+    res.json({ message: "UPId deleted successfully", deleted });
+  } catch (error) {
+    res.status(500).json({ message: "Error deleting UPId", error });
+  }
+};
+
+
+exports.updateupiScheme = async (req, res) => {
+  try {
+    const { upiId, status } = req.body;
+    const updated = await UpiModel.findByIdAndUpdate(
+      upiId,
+      { status: status },
+      { new: true }
+    );
+    res.json({ success: true, upiList: updated, message: "Successfully Update UPI" });
+  } catch (err) {
+    res.status(400).json({ message: err.message });
+  }
+};
+
+exports
+
 
 
 exports.getHomeData = async (req, res) => {
