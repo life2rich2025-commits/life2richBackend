@@ -217,23 +217,42 @@ exports.addOffer = async (req, res) => {
 
 exports.addupiScheme = async (req, res) => {
   try {
-    const { paymentType,upiid, bussinessname, } = req.body;
-    const addupiScheme = await UpiModel.insertOne({
-      paymentType: paymentType,
-      upiid: upiid,
-      bussinessname: bussinessname,
+    const { paymentType, upiid, bussinessname } = req.body;
+
+    // 🔍 Check duplicate UPI ID
+    const existingUpi = await UpiModel.findOne({ upiid });
+
+    if (existingUpi) {
+      return res.status(409).json({
+        success: false,
+        message: "UPI ID already exists"
+      });
+    }
+
+    // ✅ Create new UPI
+    const addupiScheme = await UpiModel.create({
+      paymentType,
+      upiid,
+      bussinessname,
       status: false
     });
 
     res.status(200).json({
-      message: "Add Upi successfully",
+      success: true,
+      message: "Add UPI successfully",
       response: addupiScheme
     });
 
   } catch (error) {
-    res.status(500).json({ message: "Add Upi failed", error });
+    console.error(error);
+    res.status(500).json({
+      success: false,
+      message: "Add UPI failed",
+      error
+    });
   }
 };
+
 
 
 exports.getupiScheme = async (req, res) => {

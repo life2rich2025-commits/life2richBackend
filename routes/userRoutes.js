@@ -1,5 +1,5 @@
 const express = require("express");
-const { registerUser, getUsers, loginUser, getProfile, getReferralCode ,editProfile,gethomedash,forgotPassword ,verifyOtp,resetPassword} = require("../controllers/userController");
+const { registerUser, getUsers, loginUser, getProfile, getReferralCode ,editProfile,gethomedash,forgotPassword ,resetPassword, getupiMobileScheme} = require("../controllers/userController");
 const authMiddleware = require("../middleware/auth");
 const upload = require("../middleware/upload");
 const router = express.Router();
@@ -13,5 +13,6 @@ router.put("/edit-profile", authMiddleware, upload.single("profileImage"), editP
 router.get("/homedash", gethomedash);
 router.post("/forgot-password", forgotPassword);
 router.post("/reset-password", resetPassword);
+router.get("/get-uip-mobile", getupiMobileScheme);
 
 module.exports = router;

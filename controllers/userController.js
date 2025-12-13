@@ -253,6 +253,21 @@ exports.forgotPassword = async (req, res) => {
 
 
 
+
+exports.getupiMobileScheme = async (req, res) => {
+  try {
+    const addupiScheme = await UpiModel.find({status: true});
+    res.status(200).json({
+      message: "Get Upi successfully",
+      response: addupiScheme
+    });
+
+  } catch (error) {
+    res.status(500).json({ message: "Get Upi Failed", error });
+  }
+};
+
+
 exports.resetPassword = async (req, res) => {
   try {
     const { email, newPassword, otp } = req.body;
