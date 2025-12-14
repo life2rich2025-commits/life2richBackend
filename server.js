@@ -6,9 +6,10 @@ const paymentRoutes = require("./routes/paymentRoute");
 const voucherRoutes = require("./routes/voucherRoute");
 const homeRoutes = require("./routes/homeRoutes");
 const dashboardRoutes = require("./routes/dashboardRoutes");
+const notificationRoutes = require("./routes/notificationRoutes")
 
 const app = express();
-const PORT = 5000;
+const PORT = 4000;
 
 app.use(cors({
   origin: "*",
@@ -37,6 +38,9 @@ app.use("/api", homeRoutes );
 app.use("/api/voucher", voucherRoutes);
 
 app.use("/api/dashboard", dashboardRoutes);
+
+app.use("/api/notification", notificationRoutes);
+
 
 
 app.listen(PORT, () => {

@@ -14,7 +14,9 @@ const userSchema = new mongoose.Schema({
   referralCode: { type: String, required: false },
   frdReferralCode: { type: String, required: false },
   otp: { type: String },           // hashed OTP
-  otpExpires: { type: Date }       // expire time
+  otpExpires: { type: Date },       // expire time
+  fcmToken: { type: String,default: null},
+  appVersion: {type: String,default: null},
 });
 
 userSchema.virtual("paymentMethod", {

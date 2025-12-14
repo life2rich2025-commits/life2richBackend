@@ -57,7 +57,7 @@ exports.getUsers = async (req, res) => {
 // Login User
 exports.loginUser = async (req, res) => {
   try {
-    const { userName, password } = req.body;
+    const { userName, password ,fcmToken,appVersion } = req.body;
 
     const user = await User.findOne({ userName });
 
@@ -68,6 +68,23 @@ exports.loginUser = async (req, res) => {
     // Compare password
     if (password !== user.password) {
       return res.status(401).json({ message: "Incorrect Password" });
+    }
+
+        // 🔹 Update FCM token only if provided & changed
+    let updated = false;
+
+    if (fcmToken && user.fcmToken !== fcmToken) {
+      user.fcmToken = fcmToken;
+      updated = true;
+    }
+
+    if (appVersion && user.appVersion !== appVersion) {
+      user.appVersion = appVersion;
+      updated = true;
+    }
+
+    if (updated) {
+      await user.save();
     }
 
     // Generate token
