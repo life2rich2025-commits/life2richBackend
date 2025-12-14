@@ -25,7 +25,6 @@ app.use('/upload_profile', express.static('upload_profile'));
 
 connectDB();
 
-
 app.get("/", (req, res) => {
   console.log("HIT ROOT ROUTE");
   res.send("API Running");
@@ -42,8 +41,6 @@ app.use("/api/voucher", voucherRoutes);
 app.use("/api/dashboard", dashboardRoutes);
 
 app.use("/api/notification", notificationRoutes);
-
-
 
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
