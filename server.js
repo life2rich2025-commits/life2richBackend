@@ -9,7 +9,7 @@ const dashboardRoutes = require("./routes/dashboardRoutes");
 const notificationRoutes = require("./routes/notificationRoutes")
 
 const app = express();
-const PORT = 4000;
+const PORT = 5000;
 
 app.use(cors({
   origin: "*",
