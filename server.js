@@ -8,8 +8,9 @@ const homeRoutes = require("./routes/homeRoutes");
 const dashboardRoutes = require("./routes/dashboardRoutes");
 const notificationRoutes = require("./routes/notificationRoutes")
 
+
 const app = express();
-const PORT = 5000;
+const PORT = 4000;
 
 app.use(cors({
   origin: "*",
@@ -23,6 +24,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use('/upload_profile', express.static('upload_profile'));
 
 connectDB();
+
 
 app.get("/", (req, res) => {
   console.log("HIT ROOT ROUTE");

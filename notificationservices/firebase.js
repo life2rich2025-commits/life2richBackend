@@ -1,5 +1,8 @@
 const admin = require("firebase-admin");
-const serviceAccount = require("./life2rich-firebase-adminsdk-fbsvc-5fc4bd16f6.json");
+require("dotenv").config();
+
+
+const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
