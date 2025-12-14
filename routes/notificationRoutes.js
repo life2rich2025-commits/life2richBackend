@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const sendPushNotification = require("../notificationservices/sendNotification");
 
-router.post("/send", async (req, res) => {
+router.post("send", async (req, res) => {
   try {
     const { token, title, body } = req.body;
 
