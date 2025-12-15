@@ -7,7 +7,7 @@ const Payment = require("../models/PaymentModel");
 const Winner = require("../models/WinnerModel");
 const { generateVouchers } = require("../utils/generateVouchers");
 const UpiModel = require("../models/upimodel");
-
+const sendPushNotification = require("../notificationservices/sendNotification");
 
 exports.addVoucher = async (req, res) => {
   try {
@@ -102,6 +102,12 @@ exports.updateBillingStatus = async (req, res) => {
         { ewalletAmount: finalAmount },   // set final amount
         { new: true }
       );
+
+
+       await sendPushNotification(userUpdatePayment.fcmToken, "Update Bill Information”", userUpdatePayment, {
+         type: "lottery",
+         screen: "drawResult",
+       });
 
       console.log("Updated Wallet:", userUpdatePayment.ewalletAmount);
 
