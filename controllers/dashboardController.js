@@ -104,7 +104,7 @@ exports.updateBillingStatus = async (req, res) => {
       );
 
 
-       await sendPushNotification(userUpdatePayment.fcmToken, "Update Bill Information”", updated.Description + " " + updated.amount,{data: {user:JSON.stringify(userUpdatePayment)}});
+       await sendPushNotification(userUpdatePayment.fcmToken, "Update Bill Information”", updated.Description + " " + updated.amount,{user: JSON.stringify(userUpdatePayment)});
 
       console.log("Updated Wallet:", userUpdatePayment.ewalletAmount);
 
