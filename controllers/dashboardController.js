@@ -8,6 +8,7 @@ const Winner = require("../models/WinnerModel");
 const { generateVouchers } = require("../utils/generateVouchers");
 const UpiModel = require("../models/upimodel");
 const sendPushNotification = require("../notificationservices/sendNotification");
+const Notification = require("../models/notification");
 
 exports.addVoucher = async (req, res) => {
   try {
@@ -103,8 +104,18 @@ exports.updateBillingStatus = async (req, res) => {
         { new: true }
       );
 
+      const newNotification = new Notification({
+        userId: userUpdatePayment._id, // replace with valid User ObjectId
+        title: "Update Bill Information",
+        description: updated.Description + " amount " + updated.amount + " Rup",
+        status: true, // optional, default is true
+        readAt: null   // optional
+      });
+      const savedNotification = await newNotification.save();
 
-       await sendPushNotification(userUpdatePayment.fcmToken, "Update Bill Information”", updated.Description + " " + updated.amount,{user: JSON.stringify(userUpdatePayment)});
+      console.log("Notification saved:", savedNotification);
+
+      await sendPushNotification(userUpdatePayment.fcmToken, "Update Bill Information", updated.Description + " amount " + updated.amount + " Rup",{user: JSON.stringify(userUpdatePayment)});
 
       console.log("Updated Wallet:", userUpdatePayment.ewalletAmount);
 
