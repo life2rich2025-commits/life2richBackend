@@ -90,11 +90,16 @@ exports.loginUser = async (req, res) => {
     if (updated) {
       await user.save();
     }
+    
+    let unreadCount = 0;
 
-    // const unreadCount = await Notification.countDocuments({
-    //   userId: user.id,
-    //   isRead: false
-    // });
+    if (mongoose.modelNames().includes("Notification")) {
+      unreadCount = await mongoose.model("Notification").countDocuments({
+        userId: user._id,
+        isRead: false
+      });
+    }
+
 
     // Generate token
     const token = generateToken(user._id);
