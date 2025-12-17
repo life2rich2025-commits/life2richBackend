@@ -52,7 +52,7 @@ exports.getNotificationList = async (req, res) => {
             isRead: false
         });
 
-        if (!paymentData) {
+        if (!unreadCount) {
             return res.status(404).json({
                 success: false,
                 message: "No Notification found"
