@@ -5,6 +5,8 @@ const UploadImageScheme = require("../models/UploadImage");
 const Offer = require("../models/Offer");
 const transporter = require("../config/email");
 const crypto = require("crypto");
+const notificationController = require("../controllers/notificationController");
+
 // Generate JWT
 const generateToken = (id) => {
   return jwt.sign({ id }, "MY_SECRET_KEY", { expiresIn: "30d" });
@@ -57,7 +59,7 @@ exports.getUsers = async (req, res) => {
 // Login User
 exports.loginUser = async (req, res) => {
   try {
-    const { userName, password ,fcmToken,appVersion } = req.body;
+    const { userName, password, fcmToken, appVersion } = req.body;
 
     const user = await User.findOne({ userName });
 
@@ -70,13 +72,15 @@ exports.loginUser = async (req, res) => {
       return res.status(401).json({ message: "Incorrect Password" });
     }
 
-        // 🔹 Update FCM token only if provided & changed
+    // 🔹 Update FCM token only if provided & changed
     let updated = false;
 
     if (fcmToken && user.fcmToken !== fcmToken) {
       user.fcmToken = fcmToken;
       updated = true;
     }
+
+
 
     if (appVersion && user.appVersion !== appVersion) {
       user.appVersion = appVersion;
@@ -87,11 +91,17 @@ exports.loginUser = async (req, res) => {
       await user.save();
     }
 
+    const unreadCount = await Notification.countDocuments({
+      userId: userId,
+      isRead: false
+    });
+
     // Generate token
     const token = generateToken(user._id);
 
     res.json({
       message: "Login Successful",
+      unreadCount,
       token,
       user
     });
@@ -220,7 +230,7 @@ exports.forgotPassword = async (req, res) => {
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
 
     // Hash OTP for security
-   // const hashedOtp = await bcrypt.hash(otp, 10);
+    // const hashedOtp = await bcrypt.hash(otp, 10);
 
     // Save OTP + expiry (5 min
     user.otp = otp;
@@ -258,10 +268,10 @@ exports.forgotPassword = async (req, res) => {
     </div>
   </div>
   `
-  });
+    });
 
 
-  res.json({ message: "OTP sent to email" });
+    res.json({ message: "OTP sent to email" });
 
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -273,7 +283,7 @@ exports.forgotPassword = async (req, res) => {
 
 exports.getupiMobileScheme = async (req, res) => {
   try {
-    const addupiScheme = await UpiModel.find({status: true});
+    const addupiScheme = await UpiModel.find({ status: true });
     res.status(200).json({
       message: "Get Upi successfully",
       response: addupiScheme
