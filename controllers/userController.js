@@ -91,17 +91,16 @@ exports.loginUser = async (req, res) => {
       await user.save();
     }
 
-    const unreadCount = await Notification.countDocuments({
-      userId: user.id,
-      isRead: false
-    });
+    // const unreadCount = await Notification.countDocuments({
+    //   userId: user.id,
+    //   isRead: false
+    // });
 
     // Generate token
     const token = generateToken(user._id);
 
     res.json({
       message: "Login Successful",
-      unreadCount,
       token,
       user
     });
