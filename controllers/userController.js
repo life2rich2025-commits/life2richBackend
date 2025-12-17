@@ -93,8 +93,8 @@ exports.loginUser = async (req, res) => {
     
     let unreadCount = 0;
 
-    if (mongoose.modelNames().includes("Notification")) {
-      unreadCount = await mongoose.model("Notification").countDocuments({
+    if (mongoose.modelNames().includes("notification")) {
+      unreadCount = await mongoose.model("notification").countDocuments({
         userId: user._id,
         isRead: false
       });
