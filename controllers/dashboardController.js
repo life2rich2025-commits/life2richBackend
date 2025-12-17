@@ -107,9 +107,7 @@ exports.updateBillingStatus = async (req, res) => {
       const newNotification = new Notification({
         userId: userUpdatePayment._id, // replace with valid User ObjectId
         title: "Update Bill Information",
-        description: updated.Description + " amount " + updated.amount + " Rup",
-        status: true, // optional, default is true
-        readAt: null   // optional
+        description: updated.Description + " amount " + updated.amount + " Rup"      
       });
       const savedNotification = await newNotification.save();
 

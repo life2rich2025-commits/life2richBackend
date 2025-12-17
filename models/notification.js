@@ -6,10 +6,9 @@ const NotificationSchema = new mongoose.Schema({
       ref: "User",
       required: true
     },
-  
   title: { type: String, required: true },
   description: { type: String, required: true },
-  createdAt: { type: Date, required: true },
+  createdAt: { type: Date },
   readAt: { type: Date }, // optional timestamp
   status: { type: Boolean, default: true } // optional
 }, { timestamps: true });
