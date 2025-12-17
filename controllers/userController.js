@@ -90,16 +90,17 @@ exports.loginUser = async (req, res) => {
     if (updated) {
       await user.save();
     }
-    
+
     let unreadCount = 0;
 
-    if (mongoose.modelNames().includes("notifications")) {
-      unreadCount = await mongoose.model("notifications").countDocuments({
+    try {
+      unreadCount = await Notification.countDocuments({
         userId: user._id,
         isRead: false
       });
+    } catch (error) {
+      console.log("Notification model not available");
     }
-
 
     // Generate token
     const token = generateToken(user._id);
