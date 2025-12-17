@@ -92,7 +92,7 @@ exports.loginUser = async (req, res) => {
     }
 
     const unreadCount = await Notification.countDocuments({
-      userId: userId,
+      userId: user.id,
       isRead: false
     });
 
