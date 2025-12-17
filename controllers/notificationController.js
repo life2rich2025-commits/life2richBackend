@@ -45,7 +45,7 @@ exports.getNotificationList = async (req, res) => {
         if (!userId)
             return res.status(400).json({ message: "userId required" });
 
-        const notificationData = await Notification.findOne({ userId });
+        const notificationData = await Notification.find({ userId });
 
         const unreadCount = await Notification.countDocuments({
             userId: userId,
