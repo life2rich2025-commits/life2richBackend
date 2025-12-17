@@ -47,7 +47,7 @@ exports.getNotificationList = async (req, res) => {
 
         const notificationData = await Notification.find({ userId });
 
-        const unreadCount = await Notification.countDocuments({
+        const unreadCount = await Notification.find({
             userId: userId,
             isRead: false
         });
@@ -61,7 +61,7 @@ exports.getNotificationList = async (req, res) => {
 
         return res.json({
             success: true,
-            unreadCount: unreadCount,
+            unreadCount: unreadCount.length,
             data: notificationData
         });
 
