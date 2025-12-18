@@ -34,6 +34,20 @@ exports.sendNotification = async (req, res) => {
 
 
 
+
+exports.sendNotification = async (req, res) => {
+    try {
+        const notificationdata = await Notification.find({})
+
+        res.json({ success: true, data:notificationdata, message: "Gett all Notification" });
+    } catch (err) {
+        res.status(500).json({ success: false, error: err.message });
+    }
+};
+
+
+
+
 exports.getNotificationList = async (req, res) => {
     try {
         const userId = req.userId; // token userId
@@ -66,3 +80,6 @@ exports.getNotificationList = async (req, res) => {
         return res.status(500).json({ message: "Server Error" });
     }
 };
+
+
+
