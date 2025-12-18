@@ -107,13 +107,13 @@ exports.updateBillingStatus = async (req, res) => {
       const newNotification = new Notification({
         userId: userUpdatePayment._id, // replace with valid User ObjectId
         title: "Update Bill Information",
-        description: updated.Description + " amount " + updated.amount + " Rup"      
+        description: updated.Description + " amount " + updated.amount + " Rup"
       });
       const savedNotification = await newNotification.save();
 
       console.log("Notification saved:", savedNotification);
 
-      await sendPushNotification(userUpdatePayment.fcmToken, "Update Bill Information", updated.Description + " amount " + updated.amount + " Rup",{user: JSON.stringify(userUpdatePayment)});
+      await sendPushNotification(userUpdatePayment.fcmToken, "Update Bill Information", updated.Description + " amount " + updated.amount + " Rup", { user: JSON.stringify(userUpdatePayment) });
 
       console.log("Updated Wallet:", userUpdatePayment.ewalletAmount);
 
@@ -214,6 +214,27 @@ exports.addOffer = async (req, res) => {
     );
 
     const offerList = await OfferSchema.find({});
+
+
+    const UserData = await userModel.find({})
+
+    console.log("Notification send:", addOfferScheme);
+
+    for (const user of UserData) {
+      if (!user.token) continue; // skip users without token
+
+      await sendPushNotification(
+        user.token,
+        addOfferScheme.title,
+        addOfferScheme.description,
+        {
+          type: "lottery",
+          screen: "drawResult",
+        }
+      );
+    }
+
+
     res.status(200).json({
       message: "Offer Add successfully",
       response: offerList
@@ -303,7 +324,7 @@ exports.updateupiScheme = async (req, res) => {
     const { upiId, status } = req.body;
     const updated = await UpiModel.findByIdAndUpdate(
       upiId,
-      { status:  Boolean(status) },
+      { status: Boolean(status) },
       { new: true }
     );
     res.json({ success: true, upiList: updated, message: "Successfully Update UPI" });
