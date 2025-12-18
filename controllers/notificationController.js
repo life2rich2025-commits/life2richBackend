@@ -6,13 +6,9 @@ const userModel = require("../models/userModel")
 
 exports.sendNotification = async (req, res) => {
     try {
-        const { token, title, body } = req.body;
+        const { title, body } = req.body;
 
-        console.log('token, title, body ' + token + title + body)
-        if (!token) {
-            return res.status(400).json({ message: "FCM token required" });
-        }
-        console.log('token, title, body ' + token + title + body)
+        console.log('token, title, body ' + title + body)
 
         const UserData = await userModel.find({})
 
