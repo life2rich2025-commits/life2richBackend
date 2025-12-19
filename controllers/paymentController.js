@@ -255,3 +255,21 @@ exports.transactionHistory = async (req, res) => {
     return res.status(500).json({  success: false, message: "Server Error" });
   }
 };
+
+
+exports.getAllPayment = async (req, res) => {
+  try {
+    //Get Transcation  
+    const getAllPaymentHistory = await Payment.find({});
+
+    return res.json({
+      success: true,
+      message: "Transaction History SuccessFully",
+      getAllPaymentHistory: getAllPaymentHistory,
+    });
+
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json({  success: false, message: "Server Error" });
+  }
+};

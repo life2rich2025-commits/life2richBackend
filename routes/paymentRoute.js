@@ -9,5 +9,6 @@ router.post("/submit-payment", auth, createPayment);
 router.get("/payment-history", auth, getPaymentHistory);
 router.post("/payment-withdraw", auth, createWithdraw);
 router.get("/transaction_history", auth, transactionHistory);
+router.get("/getAllPayment", getAllPayment);
 
 module.exports = router;
