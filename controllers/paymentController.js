@@ -27,8 +27,8 @@ exports.addPaymentMethod = async (req, res) => {
     //   UPDATE same row
     //-------------------------
     if (existingMethod) {
-        existingMethod.type = type;
-        existingMethod.isPrimary = setPrimary;
+      existingMethod.type = type;
+      existingMethod.isPrimary = setPrimary;
       if (type === "bank") {
         existingMethod.bankDetails = bankDetails;
       }
@@ -120,7 +120,7 @@ exports.createPayment = async (req, res) => {
       utrNumber,
       amount,
       orderId: generateOrderId(),
-      Description:"Recharge Successful",
+      Description: "Recharge Successful",
       status: "pending"
     });
 
@@ -152,8 +152,8 @@ exports.getPaymentHistory = async (req, res) => {
     // Fetch user payments
     const payments = await Payment.find({ userId })
       .sort({ createdAt: -1 })
-      // .skip(skip)
-      // .limit(limit);
+    // .skip(skip)
+    // .limit(limit);
 
     const total = await Payment.countDocuments({ userId });
 
@@ -174,7 +174,7 @@ exports.getPaymentHistory = async (req, res) => {
 
 exports.createWithdraw = async (req, res) => {
   try {
-    const userId = req.userId; 
+    const userId = req.userId;
     const { method, amount } = req.body;
 
     //Validate fields
@@ -200,7 +200,7 @@ exports.createWithdraw = async (req, res) => {
       });
     }
 
-  
+
     //Create withdraw request
     const newWithdraw = await Payment.create({
       userId,
@@ -228,7 +228,7 @@ exports.createWithdraw = async (req, res) => {
 
 exports.transactionHistory = async (req, res) => {
   try {
-    const userId = req.userId; 
+    const userId = req.userId;
 
     // Get user
     const user = await User.findById(userId);
@@ -237,7 +237,7 @@ exports.transactionHistory = async (req, res) => {
         message: "User not found"
       });
     }
-  
+
     //Get Transcation  
     const transactionHistory = await Payment.find({
       userId,
@@ -252,7 +252,7 @@ exports.transactionHistory = async (req, res) => {
 
   } catch (err) {
     console.log(err);
-    return res.status(500).json({  success: false, message: "Server Error" });
+    return res.status(500).json({ success: false, message: "Server Error" });
   }
 };
 
@@ -260,7 +260,13 @@ exports.transactionHistory = async (req, res) => {
 exports.getAllPayment = async (req, res) => {
   try {
     //Get Transcation  
-    const getAllPaymentHistory = await Payment.find({});
+    const getAllPaymentHistory = await Payment.find({})
+      .populate({
+        path: "userId",
+        select: "name userName email phoneNumber referralCode"
+      })
+      .sort({ createdAt: -1 });
+
 
     return res.json({
       success: true,
@@ -270,6 +276,6 @@ exports.getAllPayment = async (req, res) => {
 
   } catch (err) {
     console.log(err);
-    return res.status(500).json({  success: false, message: "Server Error" });
+    return res.status(500).json({ success: false, message: "Server Error" });
   }
 };
