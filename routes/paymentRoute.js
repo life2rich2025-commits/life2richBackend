@@ -1,5 +1,5 @@
 const express = require("express");
-const { addPaymentMethod , getPaymentMethod, createPayment,getPaymentHistory, createWithdraw, transactionHistory} = require("../controllers/paymentController");
+const { addPaymentMethod , getPaymentMethod, createPayment,getPaymentHistory, createWithdraw,getAllPayment, transactionHistory} = require("../controllers/paymentController");
 const router = express.Router();
 const auth = require("../middleware/auth");
 
