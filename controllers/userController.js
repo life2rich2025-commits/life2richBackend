@@ -50,7 +50,7 @@ exports.registerUser = async (req, res) => {
           referralCode: referralCode
       });
       
-      const savedData = await referral.save();
+      const savedData = await referral.create();
 
       console.log("savedData"+savedData)
 
