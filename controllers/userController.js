@@ -36,28 +36,31 @@ exports.registerUser = async (req, res) => {
       frdReferralCode: referralCode
     });
 
-       console.log("referralCode"+referralCode)
-    if (referralCode != null || referralCode.isNotEmpty) {
-       console.log("newUser._id"+newUser._id)
-       console.log("referralCode"+referralCode)
+    console.log("referralCode"+referralCode)
+   
+    if (referralCode && referralCode.trim().length > 0) {
 
-        const referralUser = await User.findOne({ referralCode });
+      console.log("newUser._id:", newUser._id);
+      console.log("referralCode:", referralCode);
 
-        if (referralUser) {
-          console.log("referralUser._id:", referralUser._id);
-        }
+      const referralUser = await User.findOne({ referralCode });
 
-       const referral = new ReferralCode({
-          userId:referralUser._id,
-          usedUserId:newUser._id,
-          referralCode: referralCode
+      if (!referralUser) {
+        console.log("Invalid referral code");
+        return;
+      }
+
+      const referral = new ReferralCode({
+        userId: referralUser._id,
+        usedUserId: newUser._id,
+        referralCode
       });
-      
-      const savedData = await referral.create();
 
-      console.log("savedData"+savedData)
+      const savedData = await referral.save();
 
+      console.log("savedData:", savedData);
     }
+
 
     res.status(201).json({
       message: "User Registered Successfully",
