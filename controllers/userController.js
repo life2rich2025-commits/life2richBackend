@@ -36,8 +36,14 @@ exports.registerUser = async (req, res) => {
       frdReferralCode: referralCode
     });
 
-    if (referralCode != null && referralCode.isNotEmpty) {
+       console.log("referralUsers._id"+referralUsers._id)
+       console.log("newUser._id"+newUser._id)
        console.log("referralCode"+referralCode)
+    if (referralCode != null && referralCode.isNotEmpty) {
+       console.log("referralUsers._id"+referralUsers._id)
+       console.log("newUser._id"+newUser._id)
+       console.log("referralCode"+referralCode)
+
        const referralUsers = await User.find({referralCode : referralCode});
 
        const referral = new ReferralCode({
