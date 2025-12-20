@@ -41,11 +41,14 @@ exports.registerUser = async (req, res) => {
        console.log("newUser._id"+newUser._id)
        console.log("referralCode"+referralCode)
 
-       const referralUsers = await User.find({referralCode : referralCode});
-       console.log("referralUsers._id"+referralUsers._id)
+        const referralUser = await User.findOne({ referralCode });
+
+        if (referralUser) {
+          console.log("referralUser._id:", referralUser._id);
+        }
 
        const referral = new ReferralCode({
-          userId:referralUsers._id,
+          userId:referralUser._id,
           usedUserId:newUser._id,
           referralCode: referralCode
       });
