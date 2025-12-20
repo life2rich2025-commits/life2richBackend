@@ -6,6 +6,7 @@ const Offer = require("../models/Offer");
 const transporter = require("../config/email");
 const crypto = require("crypto");
 const notificationController = require("../controllers/notificationController");
+const ReferralCode = require("../models/referalCode")
 
 // Generate JWT
 const generateToken = (id) => {
@@ -32,9 +33,24 @@ exports.registerUser = async (req, res) => {
       rewards: "0",
       referral: "0",
       referralCode: generateNameReferral(name),
-      frdReferralCode: ""
+      frdReferralCode: referralCode
     });
 
+    if (referralCode == null || referralCode.isNotEmpty) {
+       
+       const referralUsers = await User.find({referralCode : referralCode});
+
+       const referral = new ReferralCode({
+          userId:referralUsers._id,
+          usedUserId:newUser._id,
+          referralCode: referralCode
+      });
+      
+      const savedData = await referral.save();
+
+      console.log("savedData"+savedData)
+
+    }
 
     res.status(201).json({
       message: "User Registered Successfully",
