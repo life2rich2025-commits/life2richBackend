@@ -62,6 +62,8 @@ exports.scratchVoucher = async (req, res) => {
         { new: true } // return updated user
       );
       console.log(updatedUser)
+      await sendPushNotification(updatedUser.fcmToken, "Voucher Scratch Successfully", updatedUser.Description + " amount " + updatedUser.amount + " Rup", { user: JSON.stringify(updatedUser) });
+
     }
 
 
