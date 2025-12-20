@@ -64,7 +64,7 @@ exports.registerUser = async (req, res) => {
        //Increment referral count in User table
         await User.updateOne(
           { _id: referralUser._id },
-          { $inc: { referral: referalCount } }
+          { $set: { referral: referalCount } }
         );
     }
 
