@@ -45,8 +45,8 @@ exports.scratchVoucher = async (req, res) => {
 
     //Voucher subtract amount
     const user = await User.findById(userId);
-    user.ewalletAmount -= voucherAmount;
-    console.log(voucherId)
+    user.ewalletAmount -= vouchers.categoryAmount;
+    console.log(vouchers.voucherId)
 
     await User.findByIdAndUpdate(
       userId,
