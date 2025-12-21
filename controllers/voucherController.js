@@ -141,6 +141,18 @@ exports.scratchVoucher = async (req, res) => {
         `Winning amount ${winngAmount} Rup`,
         { user: JSON.stringify(updatedUser) }
       );
+    }else{
+        const user = await User.findById(userId);
+      //Deduct the amount from e-wallet
+      user.ewalletAmount = (Number(user.ewalletAmount) - Number(winngAmount)).toString();
+
+      updatedUser = await User.findByIdAndUpdate(
+        userId,
+        { $set: { ewalletAmount: user.ewalletAmount } },  // add money to wallet
+        { new: true } // return updated user
+      );
+      console.log(updatedUser)
+      await sendPushNotification(updatedUser.fcmToken, "Voucher Scratch Successfully", "Scratch Amount " + updatedUser.amount + " Rup", { user: JSON.stringify(updatedUser) });
     }
 
     // 3️⃣ Save winner history
