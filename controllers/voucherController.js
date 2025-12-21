@@ -43,12 +43,14 @@ exports.scratchVoucher = async (req, res) => {
       { new: true } // return updated document
     );
 
+   let updatedUser = null;
+
     //Voucher subtract amount
     const user = await User.findById(userId);
     user.ewalletAmount -= vouchers.categoryAmount;
     console.log(user.ewalletAmount)
 
-    await User.findByIdAndUpdate(
+    updatedUser = await User.findByIdAndUpdate(
       userId,
       [{ $set: { ewalletAmount: { $toDouble: user.ewalletAmount } } }],
       { new: true }
@@ -56,7 +58,6 @@ exports.scratchVoucher = async (req, res) => {
 
 
     // 4️⃣ If winning amount > 0 → update user's ewallet
-    let updatedUser = null;
 
     if (Number(winngAmount) > 0) {
 
@@ -84,12 +85,16 @@ exports.scratchVoucher = async (req, res) => {
       winnerAmount: winngAmount,
     });
 
+     console.log("updatedUser" + updatedUser)
+
+
     return res.json({
       success: true,
       voucher,
       WinnerModel,
       updatedUser,
     });
+
   } catch (err) {
     console.log(err);
     res.status(500).json({ message: "Server Error" });
