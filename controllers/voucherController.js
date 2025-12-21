@@ -43,13 +43,24 @@ exports.scratchVoucher = async (req, res) => {
       { new: true } // return updated document
     );
 
+    //Voucher subtract amount
+    const user = await User.findById(userId);
+    user.ewalletAmount -= voucherAmount;
+    console.log(voucherId)
+
+    await User.findByIdAndUpdate(
+      userId,
+      [{ $set: { ewalletAmount: { $toDouble: user.ewalletAmount } } }],
+      { new: true }
+    );
+
+
     // 4️⃣ If winning amount > 0 → update user's ewallet
     let updatedUser = null;
 
     if (Number(winngAmount) > 0) {
 
       //Get user
-      const user = await User.findById(userId);
 
       //Deduct the amount from e-wallet
       user.ewalletAmount = (Number(user.ewalletAmount) + Number(winngAmount)).toString();
@@ -157,25 +168,23 @@ exports.onVaildVoucherUser = async (req, res) => {
     }
 
     //Check if user has enough e-wallet balance
-    console.log("userdata", user.ewalletAmount);
-    console.log("userdata", voucherAmount);
     if (user.ewalletAmount < voucherAmount) {
       return res.status(400).json({ error: "Insufficient wallet balance" });
     }
 
     //Deduct the amount from e-wallet
-    user.ewalletAmount -= voucherAmount;
-    console.log(voucherId)
+    // user.ewalletAmount -= voucherAmount;
+    // console.log(voucherId)
 
     const voucherDetails = await Voucher.findOne({ voucherId: voucherId });
 
     console.log(voucherDetails)
 
-    await User.findByIdAndUpdate(
-      userId,
-      [{ $set: { ewalletAmount: { $toDouble: user.ewalletAmount } } }],
-      { new: true }
-    );
+    // await User.findByIdAndUpdate(
+    //   userId,
+    //   [{ $set: { ewalletAmount: { $toDouble: user.ewalletAmount } } }],
+    //   { new: true }
+    // );
 
     return res.status(200).json({
       message: "Voucher applied successfully",
