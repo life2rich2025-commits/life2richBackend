@@ -18,72 +18,150 @@ exports.createVoucher = async (req, res) => {
 };
 
 
+// exports.scratchVoucher = async (req, res) => {
+//   try {
+//     const { voucherId, winngAmount } = req.body;
+//     const userId = req.userId;
+
+//     let voucher = await Voucher.findOne({ voucherId: voucherId })
+
+//     if (!voucher)
+//       return res.status(404).json({ message: "Voucher not found" });
+
+//     if (voucher.isScratched)
+//       return res.status(400).json({ message: "Already scratched" });
+
+//     let vouchers = await Voucher.findOneAndUpdate(
+//       { voucherId: voucherId },
+//       {
+//         $set: {
+//           status: "expired",      // or whatever status you want
+//           isScratched: true     // or true depending on your logic
+//         }
+//       },
+//       { new: true } // return updated document
+//     );
+
+//     // Winning Amount 
+
+//     // 4️⃣ If winning amount > 0 → update user's ewallet
+//     let updatedUser = null;
+
+//     if (winngAmount > 0) {
+
+//       //Get user
+//       const user = await User.findById(userId);
+
+//       //Deduct the amount from e-wallet
+//       user.ewalletAmount = (Number(user.ewalletAmount) + Number(winngAmount)).toString();
+
+
+//       updatedUser = await User.findByIdAndUpdate(
+//         userId,
+//         { $set: { ewalletAmount: user.ewalletAmount } },  // add money to wallet
+//         { new: true } // return updated user
+//       );
+//       console.log(updatedUser)
+//       await sendPushNotification(updatedUser.fcmToken, "Voucher Scratch Successfully", " Winning amount " + updatedUser.amount + " Rup", { user: JSON.stringify(updatedUser) });
+
+//     }else{
+//        //Get user
+//       const user = await User.findById(userId);
+
+//       //Deduct the amount from e-wallet
+//       user.ewalletAmount = (Number(user.ewalletAmount) - Number(winngAmount)).toString();
+
+
+//       updatedUser = await User.findByIdAndUpdate(
+//         userId,
+//         { $set: { ewalletAmount: user.ewalletAmount } },  // add money to wallet
+//         { new: true } // return updated user
+//       );
+//       console.log(updatedUser)
+//       await sendPushNotification(updatedUser.fcmToken, "Voucher Scratch Successfully", "Scratch Amount " + updatedUser.amount + " Rup", { user: JSON.stringify(updatedUser) });
+//     }
+
+
+//     // Random win amount logic
+//     const WinnerModel = await Winner.create({
+//       userId: userId,
+//       voucherId: voucherId,
+//       winnerAmount: winngAmount,
+//     });
+
+//     return res.json({
+//       success: true,
+//       voucher,
+//       WinnerModel
+//     });
+//   } catch (err) {
+//     console.log(err);
+//     res.status(500).json({ message: "Server Error" });
+//   }
+// };
+
 exports.scratchVoucher = async (req, res) => {
   try {
     const { voucherId, winngAmount } = req.body;
     const userId = req.userId;
 
-    let voucher = await Voucher.findOne({ voucherId: voucherId })
-
-    if (!voucher)
-      return res.status(404).json({ message: "Voucher not found" });
-
-    if (voucher.isScratched)
-      return res.status(400).json({ message: "Already scratched" });
-
-    let vouchers = await Voucher.findOneAndUpdate(
-      { voucherId: voucherId },
+    // 1️⃣ Atomically scratch voucher (prevents double scratch)
+    const voucher = await Voucher.findOneAndUpdate(
+      { voucherId, isScratched: false },
       {
         $set: {
-          status: "expired",      // or whatever status you want
-          isScratched: true     // or true depending on your logic
+          status: "expired",
+          isScratched: true
         }
       },
-      { new: true } // return updated document
+      { new: true }
     );
 
-    // Winning Amount 
-
-    // 4️⃣ If winning amount > 0 → update user's ewallet
-    let updatedUser = null;
-
-    if (winngAmount > 0) {
-
-      //Get user
-      const user = await User.findById(userId);
-
-      //Deduct the amount from e-wallet
-      user.ewalletAmount = (Number(user.ewalletAmount) + Number(winngAmount)).toString();
-
-
-      updatedUser = await User.findByIdAndUpdate(
-        userId,
-        { $set: { ewalletAmount: user.ewalletAmount } },  // add money to wallet
-        { new: true } // return updated user
-      );
-      console.log(updatedUser)
-      await sendPushNotification(updatedUser.fcmToken, "Voucher Scratch Successfully", updatedUser.Description + " amount " + updatedUser.amount + " Rup", { user: JSON.stringify(updatedUser) });
-
+    if (!voucher) {
+      return res.status(400).json({ message: "Voucher not found or already scratched" });
     }
 
+    // 2️⃣ Update wallet ONLY if amount ≠ 0
+    let updatedUser = null;
 
-    // Random win amount logic
-    const WinnerModel = await Winner.create({
-      userId: userId,
-      voucherId: voucherId,
-      winnerAmount: winngAmount,
+    if (Number(winngAmount) !== 0) {
+      updatedUser = await User.findByIdAndUpdate(
+        userId,
+        {
+          $inc: {
+            ewalletAmount: Number(winngAmount) // +win or -lose safely
+          }
+        },
+        { new: true }
+      );
+
+      await sendPushNotification(
+        updatedUser.fcmToken,
+        "Voucher Scratch Successfully",
+        `Winning amount ${winngAmount} Rup`,
+        { user: JSON.stringify(updatedUser) }
+      );
+    }
+
+    // 3️⃣ Save winner history
+    const winnerEntry = await Winner.create({
+      userId,
+      voucherId,
+      winnerAmount: winngAmount
     });
 
     return res.json({
       success: true,
       voucher,
-      WinnerModel
+      winnerEntry
     });
+
   } catch (err) {
-    console.log(err);
+    console.error(err);
     res.status(500).json({ message: "Server Error" });
   }
 };
+
 
 
 exports.getMyVouchers = async (req, res) => {
