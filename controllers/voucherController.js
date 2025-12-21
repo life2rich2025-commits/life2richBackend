@@ -82,13 +82,13 @@ exports.scratchVoucher = async (req, res) => {
       userId: userId,
       voucherId: voucherId,
       winnerAmount: winngAmount,
-      user:updatedUser,
     });
 
     return res.json({
       success: true,
       voucher,
-      WinnerModel
+      WinnerModel,
+      user:updatedUser,
     });
   } catch (err) {
     console.log(err);
