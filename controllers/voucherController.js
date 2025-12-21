@@ -82,6 +82,7 @@ exports.scratchVoucher = async (req, res) => {
       userId: userId,
       voucherId: voucherId,
       winnerAmount: winngAmount,
+      user:updatedUser,
     });
 
     return res.json({
