@@ -88,7 +88,7 @@ exports.scratchVoucher = async (req, res) => {
       success: true,
       voucher,
       WinnerModel,
-      user:updatedUser,
+      updatedUser,
     });
   } catch (err) {
     console.log(err);
