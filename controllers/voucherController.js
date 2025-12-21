@@ -4,6 +4,7 @@ const User = require("../models/userModel");
 const mongoose = require("mongoose");
 const UploadImageScheme = require("../models/UploadImage");
 const { generateVouchers } = require("../utils/generateVouchers");
+const sendPushNotification = require("../notificationservices/sendNotification");
 
 exports.createVoucher = async (req, res) => {
   try {
@@ -156,6 +157,8 @@ exports.onVaildVoucherUser = async (req, res) => {
     }
 
     //Check if user has enough e-wallet balance
+    console.log("userdata", user.ewalletAmount);
+    console.log("userdata", voucherAmount);
     if (user.ewalletAmount < voucherAmount) {
       return res.status(400).json({ error: "Insufficient wallet balance" });
     }
