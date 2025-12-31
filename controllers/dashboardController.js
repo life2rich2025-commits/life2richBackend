@@ -126,11 +126,7 @@ exports.updateBillingStatus = async (req, res) => {
                 The withdrawn amount will be credited to your bank account shortly.
               </p>
 
-            //   <p style="font-size: 14px; color: #999; margin-top: 20px;">
-            //     If you did not make this withdrawal, please contact our support team immediately.
-            //   </p>
-            // </div>
-
+   
             <!-- Footer -->
             <div style="text-align: center; margin-top: 30px; font-size: 12px; color: #aaa;">
               &copy; ${new Date().getFullYear()} LifeRich. All rights reserved.
@@ -177,9 +173,7 @@ exports.updateBillingStatus = async (req, res) => {
                 The amount has been successfully added to your LifeRich wallet.
               </p>
 
-              // <p style="font-size: 14px; color: #999; margin-top: 20px;">
-              //   If you did not make this transaction, please contact our support team immediately.
-              // </p>
+    
             </div>
 
             <!-- Footer -->
