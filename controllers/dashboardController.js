@@ -113,7 +113,7 @@ exports.updateBillingStatus = async (req, res) => {
 
       await transporter.sendMail({
         from: '"Support – LifeRich" <noreplayliferich@gmail.com>',
-        to: userUpdatePayment.email,
+        to: updated.email,
         subject: "Recharge Successful - LifeRich",
         html: `
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #eee; border-radius: 10px; background-color: #f9f9f9;">
