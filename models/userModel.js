@@ -17,6 +17,7 @@ const userSchema = new mongoose.Schema({
   otpExpires: { type: Date },       // expire time
   fcmToken: { type: String,default: null},
   appVersion: {type: String,default: null},
+  createdAt: { type: Date, default: Date.now }
 });
 
 userSchema.virtual("paymentMethod", {

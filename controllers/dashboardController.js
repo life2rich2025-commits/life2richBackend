@@ -111,7 +111,56 @@ exports.updateBillingStatus = async (req, res) => {
       });
       const savedNotification = await newNotification.save();
 
+      await transporter.sendMail({
+        from: '"Support – LifeRich" <noreplayliferich@gmail.com>',
+        to: userUpdatePayment.email,
+        subject: "Recharge Successful - LifeRich",
+        html: `
+          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #eee; border-radius: 10px; background-color: #f9f9f9;">
+
+            <!-- Header -->
+            <div style="text-align: center; margin-bottom: 30px;">
+              <h2 style="color: #2C3E50; margin-top: 10px;">LifeRich</h2>
+            </div>
+
+            <!-- Main Content -->
+            <div style="text-align: center;">
+              <h3 style="color: #27AE60;">Recharge Successful 🎉</h3>
+
+              <p style="color: #555; font-size: 16px; margin-top: 15px;">
+                Your wallet recharge has been completed successfully.
+              </p>
+
+              <div style="background-color: #ffffff; border-radius: 8px; padding: 15px; margin: 20px 0;">
+                <p style="font-size: 16px; color: #333; margin: 5px 0;">
+                  <strong>Amount Recharged:</strong> ₹${updated.amount}
+                </p>
+               <p style="font-size: 16px; color: #333; margin: 5px 0;">
+                  <strong>Wallet Amount:</strong> ₹${finalAmount}
+                </p>
+                <p style="font-size: 14px; color: #777; margin: 5px 0;">
+                  <strong>Date:</strong> ${new Date().toLocaleString()}
+                </p>
+              </div>
+
+              <p style="font-size: 14px; color: #666;">
+                The amount has been successfully added to your LifeRich wallet.
+              </p>
+
+              <p style="font-size: 14px; color: #999; margin-top: 20px;">
+                If you did not make this transaction, please contact our support team immediately.
+              </p>
+            </div>
+
+            <!-- Footer -->
+            <div style="text-align: center; margin-top: 30px; font-size: 12px; color: #aaa;">
+              &copy; ${new Date().getFullYear()} LifeRich. All rights reserved.
+            </div>
+          </div>
+        `
+      });
       console.log("Notification saved:", savedNotification);
+
 
       await sendPushNotification(userUpdatePayment.fcmToken, "Update Bill Information", updated.Description + " amount " + updated.amount + " Rup", { user: JSON.stringify(userUpdatePayment) });
 
