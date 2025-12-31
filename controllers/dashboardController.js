@@ -177,9 +177,9 @@ exports.updateBillingStatus = async (req, res) => {
                 The amount has been successfully added to your LifeRich wallet.
               </p>
 
-              <p style="font-size: 14px; color: #999; margin-top: 20px;">
-                If you did not make this transaction, please contact our support team immediately.
-              </p>
+              // <p style="font-size: 14px; color: #999; margin-top: 20px;">
+              //   If you did not make this transaction, please contact our support team immediately.
+              // </p>
             </div>
 
             <!-- Footer -->
