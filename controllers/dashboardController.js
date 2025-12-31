@@ -9,6 +9,7 @@ const { generateVouchers } = require("../utils/generateVouchers");
 const UpiModel = require("../models/upimodel");
 const sendPushNotification = require("../notificationservices/sendNotification");
 const Notification = require("../models/notification");
+const transporter = require("../config/email")
 
 exports.addVoucher = async (req, res) => {
   try {
