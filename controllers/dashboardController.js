@@ -90,29 +90,58 @@ exports.updateBillingStatus = async (req, res) => {
       let finalAmount;
       if (updated.Description === "Withdraw Request Submitted") {
         finalAmount = Number(userPayment.ewalletAmount) - Number(updated.amount);
+       await transporter.sendMail({
+        from: '"Support – LifeRich" <noreplayliferich@gmail.com>',
+        to: userPayment.email,
+        subject: "Withdrawal Successful - LifeRich",
+        html: `
+          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #eee; border-radius: 10px; background-color: #f9f9f9;">
+
+            <!-- Header -->
+            <div style="text-align: center; margin-bottom: 30px;">
+              <h2 style="color: #2C3E50; margin-top: 10px;">LifeRich</h2>
+            </div>
+
+            <!-- Main Content -->
+            <div style="text-align: center;">
+              <h3 style="color: #E67E22;">Withdrawal Successful 💸</h3>
+
+              <p style="color: #555; font-size: 16px; margin-top: 15px;">
+                Your withdrawal request has been processed successfully.
+              </p>
+
+              <div style="background-color: #ffffff; border-radius: 8px; padding: 15px; margin: 20px 0;">
+                <p style="font-size: 16px; color: #333; margin: 5px 0;">
+                  <strong>Withdraw Amount:</strong> ₹${updated.amount}
+                </p>
+                <p style="font-size: 16px; color: #333; margin: 5px 0;">
+                  <strong>Wallet Balance After Withdrawal:</strong> ₹${finalAmount}
+                </p>
+                <p style="font-size: 14px; color: #777; margin: 5px 0;">
+                  <strong>Date:</strong> ${new Date().toLocaleString()}
+                </p>
+              </div>
+
+              <p style="font-size: 14px; color: #666;">
+                The withdrawn amount will be credited to your bank account shortly.
+              </p>
+
+            //   <p style="font-size: 14px; color: #999; margin-top: 20px;">
+            //     If you did not make this withdrawal, please contact our support team immediately.
+            //   </p>
+            // </div>
+
+            <!-- Footer -->
+            <div style="text-align: center; margin-top: 30px; font-size: 12px; color: #aaa;">
+              &copy; ${new Date().getFullYear()} LifeRich. All rights reserved.
+            </div>
+          </div>
+        `
+        });
+
       } else {
         finalAmount = Number(userPayment.ewalletAmount) + Number(updated.amount);
-      }
-
-      // prevent negative wallet amounts
-      if (finalAmount < 0) {
-        finalAmount = 0;
-      }
-
-      const userUpdatePayment = await User.findByIdAndUpdate(
-        updated.userId,
-        { ewalletAmount: finalAmount },   // set final amount
-        { new: true }
-      );
-
-      const newNotification = new Notification({
-        userId: userUpdatePayment._id, // replace with valid User ObjectId
-        title: "Update Bill Information",
-        description: updated.Description + " amount " + updated.amount + " Rup"
-      });
-      const savedNotification = await newNotification.save();
-
-      await transporter.sendMail({
+        await transporter.sendMail({
         from: '"Support – LifeRich" <noreplayliferich@gmail.com>',
         to: userPayment.email,
         subject: "Recharge Successful - LifeRich",
@@ -160,6 +189,27 @@ exports.updateBillingStatus = async (req, res) => {
           </div>
         `
       });
+      }
+
+      // prevent negative wallet amounts
+      if (finalAmount < 0) {
+        finalAmount = 0;
+      }
+
+      const userUpdatePayment = await User.findByIdAndUpdate(
+        updated.userId,
+        { ewalletAmount: finalAmount },   // set final amount
+        { new: true }
+      );
+
+      const newNotification = new Notification({
+        userId: userUpdatePayment._id, // replace with valid User ObjectId
+        title: "Update Bill Information",
+        description: updated.Description + " amount " + updated.amount + " Rup"
+      });
+      const savedNotification = await newNotification.save();
+
+    
       console.log("Notification saved:", savedNotification);
 
 
