@@ -33,11 +33,15 @@ module.exports.generateVouchers = async function (data) {
             return 0;
         }
 
+        function randomWinLessThan(amount) {
+            return Math.floor(Math.random() * amount);
+        }
+
         const vouchers = Array.from({ length: limitVoucher }, (_, index) => {
             const position = index + 1;
 
-            const result = calculateWinAmount(amount, position, newWinPrizeRange, limitVoucher);
-
+            // const result = calculateWinAmount(amount, position, newWinPrizeRange, limitVoucher);
+            const result  = randomWinLessThan(newWinPrizeRange)
             return {
                 categoryAmount: amount,
                 voucherId: `VCHR-${uuidv4()}`,
