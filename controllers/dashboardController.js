@@ -516,6 +516,7 @@ exports.userPaymentHistorty = async (req, res) => {
           }
         }
       ]);
+      console.log(user._id);
 
       console.log(winnerResult);
 
