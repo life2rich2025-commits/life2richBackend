@@ -39,7 +39,7 @@ exports.sendNotification = async (req, res) => {
 
 
 
-exports.sendNotification = async (req, res) => {
+exports.getAllNotification = async (req, res) => {
     try {
         const notificationdata = await Notification.find({})
 
