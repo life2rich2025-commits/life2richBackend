@@ -611,7 +611,7 @@ exports.userPaymentHistorty = async (req, res) => {
 
 exports.getUserDetails = async (req, res) => {
   try {
-    const user = await User({});
+    const user = await User.find({});
     res.json({ success: true, message: "Get User Details" , user:user });
   } catch (err) {
     res.status(400).json({ message: err.message });
