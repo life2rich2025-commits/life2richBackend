@@ -19,6 +19,7 @@ router.get("/getupi", dashboardController.getupiScheme);
 router.post("/deleteupi",dashboardController.deleteupiScheme)
 router.post("/updateupi",dashboardController.updateupiScheme)
 router.get("/userPaymentHistorty",dashboardController.userPaymentHistorty)
+router.get("/getUserDetails",dashboardController.getUserDetails)
 
 
 module.exports = router;

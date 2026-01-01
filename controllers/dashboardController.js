@@ -608,3 +608,12 @@ exports.userPaymentHistorty = async (req, res) => {
     res.status(400).json({ success: false, message: err.message });
   }
 };
+
+exports.getUserDetails = async (req, res) => {
+  try {
+    const user = await User({});
+    res.json({ success: true, message: "Get User Details" , user:user });
+  } catch (err) {
+    res.status(400).json({ message: err.message });
+  }
+};
