@@ -6,11 +6,15 @@ const userModel = require("../models/userModel")
 
 exports.sendNotification = async (req, res) => {
     try {
-        const { title, body } = req.body;
+        const { title, body, userId } = req.body;
 
-        console.log('token, title, body ' + title + body)
-
-        const UserData = await userModel.find({})
+        console.log('token, title, body ' + title + body + userId)
+        let UserData = "";
+        if(userId== null && userId == "" ){
+            UserData = await userModel.find({})
+        }else{
+            UserData = await userModel.find({_id: UserData._id})
+        }
 
         for (const user of UserData) {
             if (!user.token) continue; // skip users without token

@@ -497,3 +497,114 @@ exports.getHomeData = async (req, res) => {
     res.status(500).json({ message: "Server Error" });
   }
 };
+
+
+exports.userPaymentHistorty = async (req, res) => {
+  try {
+    const users = await User.find({}).lean();
+    const response = [];
+
+    for (const user of users) {
+
+      // ✅ Winner total
+      const winnerResult = await Winner.aggregate([
+        { $match: { userId: user._id } },
+        {
+          $group: {
+            _id: null,
+            totalAmount: { $sum: "$winnerAmount" }
+          }
+        }
+      ]);
+
+      // ✅ Recharge success
+      const rechargeSuccess = await Payment.aggregate([
+        {
+          $match: {
+            userId: user._id,
+            status: "success",
+            Description: "Recharge Successful"
+          }
+        },
+        {
+          $group: {
+            _id: null,
+            totalAmount: { $sum: "$amount" }
+          }
+        }
+      ]);
+
+      // ✅ Recharge failed
+      const rechargeFailed = await Payment.aggregate([
+        {
+          $match: {
+            userId: user._id,
+            status: "failed",
+            Description: "Recharge Successful"
+          }
+        },
+        {
+          $group: {
+            _id: null,
+            totalAmount: { $sum: "$amount" }
+          }
+        }
+      ]);
+
+
+        const withdrawalSuccess = await Payment.aggregate([
+        {
+          $match: {
+            userId: user._id,
+            status: "success",
+            Description: "Withdraw Request Submitted"
+          }
+        },
+        {
+          $group: {
+            _id: null,
+            totalAmount: { $sum: "$amount" }
+          }
+        }
+      ]);
+
+       // ✅ Recharge failed
+      const withdrawalFailed = await Payment.aggregate([
+        {
+          $match: {
+            userId: user._id,
+            status: "failed",
+            Description: "Withdraw Request Submitted"
+          }
+        },
+        {
+          $group: {
+            _id: null,
+            totalAmount: { $sum: "$amount" }
+          }
+        }
+      ]);
+
+      response.push({
+        userId: user._id,
+        name: user.name,
+        email: user.email,
+        walletAmount: Number(user.ewalletAmount) || 0,
+        totalWinningAmount: winnerResult[0]?.totalAmount || 0,
+        rechargeSuccess: rechargeSuccess[0]?.totalAmount || 0,
+        rechargeFailed: rechargeFailed[0]?.totalAmount || 0,
+        withdrawalSuccess: withdrawalSuccess[0]?.totalAmount || 0,
+        withdrawalFailed: withdrawalFailed[0]?.totalAmount || 0
+      });
+    }
+
+    res.json({
+      success: true,
+      data: response,
+      message: "User payment history fetched successfully"
+    });
+
+  } catch (err) {
+    res.status(400).json({ success: false, message: err.message });
+  }
+};
