@@ -517,6 +517,8 @@ exports.userPaymentHistorty = async (req, res) => {
         }
       ]);
 
+      console.log(winnerResult);
+
       // ✅ Recharge success
       const rechargeSuccess = await Payment.aggregate([
         {
