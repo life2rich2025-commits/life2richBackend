@@ -507,15 +507,32 @@ exports.userPaymentHistorty = async (req, res) => {
     for (const user of users) {
 
       // ✅ Winner total
+      // const winnerResult = await Winner.aggregate([
+      //   { $match: { userId: user._id } },
+      //   {
+      //     $group: {
+      //       _id: null,
+      //       totalAmount: { $sum: "$winnerAmount" }
+      //     }
+      //   }
+      // ]);
+
       const winnerResult = await Winner.aggregate([
-        { $match: { userId: user._id } },
+        {
+          $match: {
+            userId: ObjectId("695768c46fbb66341ba55368")
+          }
+        },
         {
           $group: {
             _id: null,
-            totalAmount: { $sum: "$winnerAmount" }
+            totalAmount: {
+              $sum: { $toDouble: "$winnerAmount" }
+            }
           }
         }
-      ]);
+      ])
+
       console.log(user._id);
 
       console.log(winnerResult);
