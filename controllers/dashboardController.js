@@ -520,7 +520,7 @@ exports.userPaymentHistorty = async (req, res) => {
       const winnerResult = await Winner.aggregate([
         {
           $match: {
-            userId: ObjectId(user._id)
+            userId: user._id
           }
         },
         {
