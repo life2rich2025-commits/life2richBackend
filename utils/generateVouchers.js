@@ -4,7 +4,7 @@ const { v4: uuidv4 } = require("uuid");
 
 module.exports.generateVouchers = async function (data) {
     try {
-        let { amount, limitVoucher, winPrizeRange } = data;
+        let { amount, limitVoucher, winPrizeRange , minamount} = data;
 
         let oldWinPrizeRange = winPrizeRange;
         let newWinPrizeRange = winPrizeRange;
@@ -32,16 +32,17 @@ module.exports.generateVouchers = async function (data) {
             }
             return 0;
         }
-
-        function randomWinLessThan(amount) {
-            return Math.floor(Math.random() * amount);
+    
+        function randomWinLessThan(amount, min = 0) {
+            const max = amount - 1;
+            return Math.floor(Math.random() * (max - min + 1)) + min;
         }
 
         const vouchers = Array.from({ length: limitVoucher }, (_, index) => {
             const position = index + 1;
 
             // const result = calculateWinAmount(amount, position, newWinPrizeRange, limitVoucher);
-            const result  = randomWinLessThan(newWinPrizeRange)
+            const result  = randomWinLessThan(newWinPrizeRange, minamount)
             return {
                 categoryAmount: amount,
                 voucherId: `VCHR-${uuidv4()}`,
