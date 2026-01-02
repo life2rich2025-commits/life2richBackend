@@ -34,9 +34,18 @@ module.exports.generateVouchers = async function (data) {
         }
     
         function randomWinLessThan(amount, min = 0) {
+            if (amount <= 0) return 0;
+
             const max = amount - 1;
+
+            // normalize min
+            min = Math.max(0, min);
+
+            if (min > max) return max;
+
             return Math.floor(Math.random() * (max - min + 1)) + min;
         }
+
 
         const vouchers = Array.from({ length: limitVoucher }, (_, index) => {
             const position = index + 1;
