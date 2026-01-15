@@ -20,6 +20,7 @@ router.post("/deleteupi",dashboardController.deleteupiScheme)
 router.post("/updateupi",dashboardController.updateupiScheme)
 router.get("/userPaymentHistorty",dashboardController.userPaymentHistorty)
 router.get("/getUserDetails",dashboardController.getUserDetails)
+router.get("/getWinnerList",dashboardController.getWinnerList)
 
 
 module.exports = router;

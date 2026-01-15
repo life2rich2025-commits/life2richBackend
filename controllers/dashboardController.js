@@ -637,3 +637,112 @@ exports.getUserDetails = async (req, res) => {
     res.status(400).json({ message: err.message });
   }
 };
+
+
+exports.getWinnerList = async (req, res) => {
+  try {
+    const data = await getWinnersWithFilters(req.query);
+    res.status(200).json({ success: true, data });
+  } catch (err) {
+    res.status(400).json({ message: err.message });
+  }
+};
+
+const getWinnersWithFilters = async (filters) => {
+  const {
+    userId,
+    voucherId,
+    status,
+    fromDate,
+    toDate,
+    minWinAmount,
+    maxWinAmount
+  } = filters;
+
+  const pipeline = [];
+
+  // 🔹 Filter on Winner collection
+  const winnerMatch = {};
+
+  if (userId) {
+    winnerMatch.userId = new mongoose.Types.ObjectId(userId);
+  }
+
+  if (voucherId) {
+    winnerMatch.voucherId = voucherId;
+  }
+
+  if (fromDate || toDate) {
+    winnerMatch.createdAt = {};
+    if (fromDate) winnerMatch.createdAt.$gte = new Date(fromDate);
+    if (toDate) winnerMatch.createdAt.$lte = new Date(toDate);
+  }
+
+  if (Object.keys(winnerMatch).length > 0) {
+    pipeline.push({ $match: winnerMatch });
+  }
+
+  // 🔹 Join User
+  pipeline.push(
+    {
+      $lookup: {
+        from: "users",
+        localField: "userId",
+        foreignField: "_id",
+        as: "user"
+      }
+    },
+    { $unwind: "$user" }
+  );
+
+  // 🔹 Join Voucher
+  pipeline.push(
+    {
+      $lookup: {
+        from: "vouchers",
+        localField: "voucherId",
+        foreignField: "voucherId",
+        as: "voucher"
+      }
+    },
+    { $unwind: "$voucher" }
+  );
+
+  // 🔹 Filter on Voucher fields
+  const voucherMatch = {};
+
+  if (status) {
+    voucherMatch["voucher.status"] = status;
+  }
+
+  if (minWinAmount || maxWinAmount) {
+    voucherMatch["voucher.winAmount"] = {};
+    if (minWinAmount) voucherMatch["voucher.winAmount"].$gte = Number(minWinAmount);
+    if (maxWinAmount) voucherMatch["voucher.winAmount"].$lte = Number(maxWinAmount);
+  }
+
+  if (Object.keys(voucherMatch).length > 0) {
+    pipeline.push({ $match: voucherMatch });
+  }
+
+  // 🔹 Final projection
+  pipeline.push({
+    $project: {
+      _id: 1,
+      voucherId: 1,
+      winnerAmount: 1,
+      createdAt: 1,
+      "user._id": 1,
+      "user.name": 1,
+      "user.userName": 1,
+      "user.email": 1,
+      "voucher.categoryAmount": 1,
+      "voucher.winAmount": 1,
+      "voucher.status": 1,
+      "voucher.isScratched": 1
+    }
+  });
+
+  return Winner.aggregate(pipeline);
+};
+
