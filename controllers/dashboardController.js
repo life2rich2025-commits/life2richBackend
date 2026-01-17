@@ -10,6 +10,7 @@ const UpiModel = require("../models/upimodel");
 const sendPushNotification = require("../notificationservices/sendNotification");
 const Notification = require("../models/notification");
 const transporter = require("../config/email")
+const mongoose = require("mongoose");
 
 exports.addVoucher = async (req, res) => {
   try {
@@ -664,9 +665,11 @@ const getWinnersWithFilters = async (filters) => {
   // 🔹 Filter on Winner collection
   const winnerMatch = {};
 
+
   if (userId && mongoose.Types.ObjectId.isValid(userId)) {
-    winnerMatch.userId = new mongoose.Types.ObjectId(userId);
+    winnerMatch.userId= new mongoose.Types.ObjectId(String(userId));
   }
+
 
   if (voucherId) {
     winnerMatch.voucherId = voucherId;
@@ -683,33 +686,17 @@ const getWinnersWithFilters = async (filters) => {
   }
 
   // 🔹 Join User
-  // pipeline.push(
-  //   {
-  //     $lookup: {
-  //       from: "users",
-  //       localField: "userId",
-  //       foreignField: "_id",
-  //       as: "user"
-  //     }
-  //   },
-  //   { $unwind: "$user" }
-  // );
-
-  pipeline.push({
-    $lookup: {
-      from: "users",
-      let: { userId: { $toObjectId: "$userId" } },
-      pipeline: [
-        {
-          $match: {
-            $expr: { $eq: ["$_id", "$$userId"] }
-          }
-        }
-      ],
-      as: "user"
-    }
-  });
-
+  pipeline.push(
+    {
+      $lookup: {
+        from: "users",
+        localField: "userId",
+        foreignField: "_id",
+        as: "user"
+      }
+    },
+    { $unwind: "$user" }
+  )
 
   // 🔹 Join Voucher
   pipeline.push(
