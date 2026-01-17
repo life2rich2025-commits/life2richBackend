@@ -664,8 +664,8 @@ const getWinnersWithFilters = async (filters) => {
   // 🔹 Filter on Winner collection
   const winnerMatch = {};
 
-  if (userId) {
-    winnerMatch.userId = userId;
+  if (userId && mongoose.Types.ObjectId.isValid(userId)) {
+    winnerMatch.userId = new mongoose.Types.ObjectId(userId);
   }
 
   if (voucherId) {
