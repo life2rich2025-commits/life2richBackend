@@ -683,17 +683,33 @@ const getWinnersWithFilters = async (filters) => {
   }
 
   // 🔹 Join User
-  pipeline.push(
-    {
-      $lookup: {
-        from: "users",
-        localField: "userId",
-        foreignField: "_id",
-        as: "user"
-      }
-    },
-    { $unwind: "$user" }
-  );
+  // pipeline.push(
+  //   {
+  //     $lookup: {
+  //       from: "users",
+  //       localField: "userId",
+  //       foreignField: "_id",
+  //       as: "user"
+  //     }
+  //   },
+  //   { $unwind: "$user" }
+  // );
+
+  pipeline.push({
+    $lookup: {
+      from: "users",
+      let: { userId: { $toObjectId: "$userId" } },
+      pipeline: [
+        {
+          $match: {
+            $expr: { $eq: ["$_id", "$$userId"] }
+          }
+        }
+      ],
+      as: "user"
+    }
+  });
+
 
   // 🔹 Join Voucher
   pipeline.push(
