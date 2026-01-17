@@ -665,7 +665,7 @@ const getWinnersWithFilters = async (filters) => {
   const winnerMatch = {};
 
   if (userId) {
-    winnerMatch.userId = ObjectId(userId);
+    winnerMatch.userId = userId;
   }
 
   if (voucherId) {
