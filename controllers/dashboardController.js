@@ -664,8 +664,8 @@ const getWinnersWithFilters = async (filters) => {
   // 🔹 Filter on Winner collection
   const winnerMatch = {};
 
-  if (userId && mongoose.Types.ObjectId.isValid(userId)) {
-    winnerMatch.userId = new mongoose.Types.ObjectId(userId);
+  if (userId) {
+    winnerMatch.userId = ObjectId(userId);
   }
 
   if (voucherId) {
@@ -742,6 +742,8 @@ const getWinnersWithFilters = async (filters) => {
       "voucher.isScratched": 1
     }
   });
+
+  console.log(pipeline);
 
   return Winner.aggregate(pipeline);
 };
